@@ -14,7 +14,7 @@
 
 ### KWY Virus Trainer（愿者上钩）
 
-* <font color="red">999元1年1台设备，[点我购买]("https://nanflas202202.github.io/Rickroll.mp4")</font>
+* <font color="red">999元1年1台设备，[点我购买]("https://huang2.cn/old/images/RickRoll.mp4")</font>
 
 * 或者……[点我试用](https://nanflas202202.github.io/KWYVirusTrainer.md)
 
