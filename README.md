@@ -10,12 +10,12 @@
 
 ### NFLS Virus Trainer（初一二班工作室的遗作）
 
-[[点我去官网下载](https://Nanflas202202.github.io/NanflasCY2BStudio/HypertextFiles/NFLSVirusTrainer.html)
+[[点我去官网下载](https://nanflas202202.github.io/NanflasCY2BStudio/HypertextFiles/NFLSVirusTrainer.html)
 
 ### KWY Virus Trainer（愿者上钩）
 
 * <font color="red">999元1年1台设备！--</font>[点我购买](https://huang2.cn/old/images/RickRoll.mp4)
 
-* 或者……[点我试用](https://nanflas202202.github.io/KWYVirusTrainer.md)
+* 或者……[点我了解更多](https://Nanflas202202.github.io/KWYTech/KWYVirusTrainer.html)
 
   
