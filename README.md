@@ -10,7 +10,7 @@
 
 ### NFLS Virus Trainer（初一二班工作室的遗作）
 
-[[点我去官网下载](https://nanflas202202.github.io/ClassicVT.md)]
+[[点我去官网下载](https://Nanflas202202.github.io/NanflasCY2BStudio/HypertextFiles/NFLSVirusTrainer.html)
 
 ### KWY Virus Trainer（愿者上钩）
 
