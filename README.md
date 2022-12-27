@@ -2,9 +2,11 @@
 
 ## Our History
 
-2022年9月11日，我们吞并了南夫拉斯初一二班工作室
+2022年9月11日，我们成立了
 
 自此，一家专注于割韭菜，从不干实事的垃圾公司就此诞生
+
+2022年12月12日，我们吞并了南夫拉斯初一二班工作室
 
 ## 我们的产品
 
@@ -16,6 +18,6 @@
 
 * <font color="red">999元1年1台设备！--</font>[点我购买](https://huang2.cn/old/images/RickRoll.mp4)
 
-* 或者……[点我了解更多](https://Nanflas202202.github.io/KWYTech/KWYVirusTrainer.html)
+* 或者……[点我了解更多](https://Nanflas202202.github.io/KWYTech/KWYVirusTrainer/KWYVirusTrainer.html)
 
   
