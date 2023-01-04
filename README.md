@@ -6,7 +6,7 @@
 
 自此，一家专注于割韭菜，从不干实事的垃圾公司就此诞生
 
-2022年12月12日，我们吞并了南夫拉斯初一二班工作室，并将它们的[官网](https://nanflas202202.github.io/NanflasCY2BStudio/HypertextFiles/NFLS202202Main.html)改成了我们的官网。就这样，世界上有少了一家~~好~~公司
+2022年12月12日，我们吞并了南夫拉斯初一二班工作室，并将它们的[官网](https://nanflas202202.github.io/NanflasCY2BStudio/HypertextFiles/Fake404.html)改成了我们的官网。就这样，世界上有少了一家~~好~~公司
 
 ## 我们的产品
 
