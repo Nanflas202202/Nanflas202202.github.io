@@ -1,0 +1,168 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>产品中心</title>  
+<style>  
+    /* Base styles */  
+    body {  
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+        margin: 0;  
+        padding: 0;  
+        background-color: #F2F2F2;  
+        color: #333;  
+    }  
+  
+    /* Header */  
+    header {  
+        background-color: #0078D7;  
+        color: white;  
+        padding: 10px;  
+    }  
+  
+    header h1 {  
+        margin: 0;  
+    }  
+  
+    /* Main content */  
+    main {  
+        padding: 20px;  
+    }  
+  
+    /* Buttons */  
+    .winui-button {  
+        display: inline-block;  
+        padding: 8px 16px;  
+        background-color: #0078D7;  
+        color: white;  
+        border: none;  
+        border-radius: 4px;  
+        cursor: pointer;  
+        text-align: center;  
+        text-decoration: none;  
+        font-size: 16px;  
+        transition-duration: 0.4s;  
+    }  
+  
+    .winui-button:hover {  
+        background-color: #005A9E;  
+    }  
+  
+    /* Lists */  
+    .winui-list {  
+        list-style-type: none;  
+        padding: 0;  
+    }  
+  
+    .winui-list-item {  
+        padding: 10px;  
+        border-bottom: 1px solid #ccc;  
+    }  
+  
+    /* Other UI elements */  
+    .winui-card {  
+        background-color: white;  
+        border-radius: 4px;  
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  
+        margin-bottom: 10px;  
+        padding: 15px;  
+    }  
+    
+	.FootBar {  
+            background-color: #156f;  
+            color: #fff;  
+            padding: 10px 0;  
+        }  
+  
+    .FoorBar ul {  
+            list-style: none;  
+            margin: 0;  
+            padding: 0;  
+            display: flex;  
+        }  
+  
+    .FootBar li {  
+            margin-right: 1px;  
+        }  
+  
+    .FootBar a {  
+            color:#ffffff ;  
+            text-decoration: none;  
+            padding: 10px;
+			}
+    /* Responsive layout */  
+    @media screen and (max-width: 600px) {  
+        header, main {  
+            padding: 10px;  
+        }  
+    }  
+</style>  
+</head>  
+<body>  
+  
+<header>  
+    <h1>初二二班工作室</h1>  
+</header>  
+  
+<main>  
+    <div class="winui-card">  
+        <h2>产品中心</h2>  
+        <p>这些是我们提供的产品。</p>  
+    </div>  
+  
+    <div class="winui-card">  
+        <h2>NFLS工具包</h2>  
+		<p>南夫拉斯联盟最全的工具箱，集成了大量实用小工具，让你的信息课和生活不再会烦恼</p>
+        <button class="winui-button">点我查看</button>  
+    </div>
+	<div class="winui-card">  
+        <h2>NFLS Virus Trainer Alpha 6 Python版</h2>  
+		<p>我们的明星产品NFLS Virus Trainer Alpha 6（未发布）的Python重构版</p>
+        <button class="winui-button">点我查看</button>  
+    </div>
+  	    <div class="winui-card">  
+        <h2>NFLS Virus Trainer Alpha 6</h2>  
+		<p>我们第二次在我们的软件中加入GUI。使用纯C++以及Windows原生库开发，无需安装任何其他组件！</p>
+        <button class="winui-button">点我查看</button>  
+    </div>    
+  	    <div class="winui-card">  
+        <h2>Virus Trainer Alpha 5</h2>  
+		<p>一键杀毒，让你摆脱U盘染毒的烦恼！我们使用了命令行界面，简介的命令行窗口，向你展示什么叫简约就是美！此版本为长期支持版本。</p>
+        <button class="winui-button">点我查看</button>  
+    </div>  
+  
+    <div class="winui-card">
+        <h2>以下为我们已经放弃支持的项目及重组前的遗留项目</h2>  
+        <ul class="winui-list">
+			<li class="winui-list-item">KWY Virus Trainer Alpha 4系列(KWY Tech ，2023)</li>  
+			<p>第一次尝试使用ChatGPT开发。</p>
+			<p>废案，一个能正常使用的版本都没有</p>
+            <li class="winui-list-item">KWY Virus Trainer Alpha 3.1系列(KWY Tech/SY Technologies ，2023)</li>  
+			<p>早期为NVT3 SP1的C++重构版本，后逐渐加入更多内容。基于C++命令行开发。</p>
+			<p>现已停止支持</p>
+			<button>点我查看</button>
+			<li class="winui-list-item">SY Virus Trainer/十月杀毒系列(SY Technologies 2022-2023)</li> 
+			<p>唯一一代基于Python开发的Virus Trainer系列的软件。拥有GUI。</p>
+			<p>现已暂停开发。</p>
+            <li class="winui-list-item">NFLS Virus Trainer V3系列(KWY Tech-NFLS Cy2B Studio，2022)</li> 
+			<p>最后一代基于批处理文件的Virus Trainer。可能是由于封装的原因，存在被杀毒软件误报的问题。</p>
+			<p>现已停止开发，但仍享受技术支持。</p>
+			<button>点我查看</button>      <button>点我下载</button>
+            <li class="winui-list-item">NFLS Virus Trainer 批处理版本(NFLS Cy2B Studio，2022)</li>  
+			<p>由于出现了进程名为"CMD.exe"的病毒，故继续基于批处理文件/CMD脚本开发会导致杀完后的"FINISH!"不显示。同时也为了能让我们的软件有Logo，故停止了这一系列的开发。</p>
+			<p>现已停止支持</p>
+        </ul>  
+    </div> 
+	<div class="FootBar">  
+        
+		<a href="https://Nanflas202202.github.io">返回首页</a>  
+            <!---<li><a href="#">关于我们</a></li>  
+            <li><a href="#">服务</a></li>  
+            <li><a href="#">联系我们</a></li>--->  
+         
+    </div> 
+</main>  
+  
+</body>  
+</html>
