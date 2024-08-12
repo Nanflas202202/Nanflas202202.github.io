@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Required</title>
+<script src="LoginCheck.js" defer></script>
+</head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+	flex-direction: column;
+}
+
+.form-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background-color: #0078D7;
+    color: white;
+    text-align: center;
+    padding:0px; /* 添加一些内边距 */
+    margin-top: auto; /* 将footer推至底部 */
+}
+</style>
+<body>
+<div id="login-form" class="form-container">
+  <h2>Login</h2>
+  <form id="login-form-inner">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+<div id="MainContent" style="display: none;">
+<script defer>
+	document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('.sidebar a');
+    const posts = document.querySelectorAll('.content .post');
+
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const postId = this.getAttribute('data-post');
+            posts.forEach(post => {
+                post.classList.remove('active');
+                if (post.id === postId) {
+                    post.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // 默认显示第一篇文章
+    if (posts.length > 0) {
+        posts[0].classList.add('active');
+    }
+});
+</script>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.container {
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 100%;
+}
+
+.sidebar {
+    flex: 0 0 25%;
+    background-color: #e6e6ea;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.content {
+    flex: 0 0 70%;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    margin-left: 5%;
+}
+
+.post {
+    display: none;
+}
+
+.post.active {
+    display: block;
+}
+
+header {
+    background-color: #DADADA;
+    color: white;
+    text-align: center;
+    padding: 5px 0;
+}
+
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li a {
+    color: #333;
+    text-decoration: none;
+}
+
+/* Responsive design for smaller screens */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-wrap: wrap;
+        padding: 20px 10px;
+    }
+
+    .sidebar {
+        flex: 0 0 100%; /* On small screens, the sidebar takes up the full width */
+        display: none; /* Hide the sidebar on small screens */
+    }
+
+    .content {
+        flex: 0 0 100%; /* On small screens, the content also takes up the full width */
+        margin-left: 0;
+    }
+}
+	
+.nav-bar {  
+            background-color: #EDEDED; /* 使用浅灰色 */  
+            padding: 10px 0;  
+        }  
+  
+        .nav-bar ul {  
+            list-style-type: none;  
+            margin: 0;  
+            padding: 0;  
+            overflow: hidden;  
+        }  
+  
+        .nav-bar li {  
+            float: left;  
+        }  
+  
+        .nav-bar li a {  
+            display: block;  
+            color: #333;  
+            text-align: center;  
+            padding: 14px 16px;  
+            text-decoration: none;  
+        }  
+  
+        .nav-bar li a:hover {  
+            background-color: #ddd; /* 鼠标悬停时的高亮效果 */  
+        }  
+   
+</style>
+<header>
+  <div class="logo"> <img src="CS2B.png" alt="Logo"> </div>
+</header>
+<div class="nav-bar">
+  <ul>
+    <li><a href="https://Nanflas202202.github.io/">首页</a></li>
+    <li><a href="https://Nanflas202202.github.io/NewHTMLs/About.html">关于我们</a></li>
+    <li><a href="https://Nanflas202202.github.io/NewHTMLs/ProductCenter.html">产品中心</a></li>
+    <li><a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">下载中心</a></li>
+    <li><a href="https://huangyuzhe1121.github.io/images/RickRoll.mp4">联系我们</a></li>
+  </ul>
+</div>
+<div class="container">
+<aside class="sidebar">
+  <h2>初三二班工作室 管理员区域</h2>
+  <ul>
+    <li><a href="#" data-post="post1">旧版本文件下载</a></li>
+	<li><a href="#" data-post="post2">好Van的</a></li>
+    <!-- 更多文章链接 -->
+  </ul>
+</aside>
+<main class="content">
+<article id="post1" class="post">
+  <h1>什么都没有~</h1>
+</article>
+<article id="post2" class="post">
+  <h1>想什么呢！</h1>
+</article>
+<!-- 更多文章 -->
+</main>
+</div>
+</div>
+<footer>
+  <p>版权所有 © 2024 初三二班工作室</p>
+</footer>	
+</body>
+</html>

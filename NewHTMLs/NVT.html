@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVT官网</title>
+</head>
+<script defer>
+	document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('.sidebar a');
+    const posts = document.querySelectorAll('.content .post');
+
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const postId = this.getAttribute('data-post');
+            posts.forEach(post => {
+                post.classList.remove('active');
+                if (post.id === postId) {
+                    post.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // 默认显示第一篇文章
+    if (posts.length > 0) {
+        posts[0].classList.add('active');
+    }
+});
+</script>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+.container {
+    display: flex;
+    flex-wrap: nowrap;
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 100%;
+}
+.sidebar {
+    flex: 0 0 25%;
+    background-color: #e6e6ea;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+.content {
+    flex: 0 0 70%;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    margin-left: 5%;
+}
+.post {
+    display: none;
+}
+.post.active {
+    display: block;
+}
+header {
+    background-color: #DADADA;
+    color: white;
+    text-align: center;
+    padding: 5px 0;
+}
+footer {
+    background-color: #0078D7;
+    color: white;
+    text-align: center;
+    padding: 0px 0;
+}
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+.sidebar ul li a {
+    color: #333;
+    text-decoration: none;
+}
+
+/* Responsive design for smaller screens */
+@media screen and (max-width: 768px) {
+.container {
+    flex-wrap: wrap;
+    padding: 20px 10px;
+}
+.sidebar {
+    flex: 0 0 100%; /* On small screens, the sidebar takes up the full width */
+    display: none; /* Hide the sidebar on small screens */
+}
+.content {
+    flex: 0 0 100%; /* On small screens, the content also takes up the full width */
+    margin-left: 0;
+}
+}
+.nav-bar {
+    background-color: #EDEDED; /* 使用浅灰色 */
+    padding: 10px 0;
+}
+.nav-bar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.nav-bar li {
+    float: left;
+}
+.nav-bar li a {
+    display: block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.nav-bar li a:hover {
+    background-color: #ddd; /* 鼠标悬停时的高亮效果 */
+}
+</style>
+<body>
+<header>
+    <div class="logo"> <img src="KVT.png" alt="Logo"> </div>
+</header>
+<div class="nav-bar">
+    <ul>
+        <li><a href="https://Nanflas202202.github.io/">首页</a></li>
+        <li><a href="https://Nanflas202202.github.io/NewHTMLs/About.html">关于我们</a></li>
+        <li><a href="https://Nanflas202202.github.io/NewHTMLs/ProductCenter.html">产品中心</a></li>
+        <li><a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">下载中心</a></li>
+        <li><a href="https://huangyuzhe1121.github.io/images/RickRoll.mp4">联系我们</a></li>
+    </ul>
+</div>
+<div class="container">
+    <aside class="sidebar">
+        <h2>NVT官网</h2>
+        <ul>
+            <li><a href="#" data-post="post1">南外工具箱</a></li>
+            <li><a href="#" data-post="post2">NVT A6 Python版</a></li>
+            <li><a href="#" data-post="post3">NVT A6 C++版</a></li>
+            <li><a href="#" data-post="post4">VT A5</a></li>
+            <li><a href="#" data-post="post5">SYVT A4</a></li>
+            <li><a href="#" data-post="post6">KVT A4 ChatGPT版</a></li>
+            <li><a href="#" data-post="post7">KVT Rebuild A3.2 C++版</a></li>
+            <li><a href="#" data-post="post8">KVT Rebuild A3.1 C++版</a></li>
+            <li><a href="#" data-post="post9">NVT A3</a></li>
+            <li><a href="#" data-post="post10">VirusTrainer GBK</a></li>
+            <li><a href="#" data-post="post11">NVT 批处理封装系列</a></li>
+            <li><a href="#" data-post="post12">NVT 批处理系列</a></li>
+            <!-- 更多文章链接 -->
+        </ul>
+    </aside>
+    <main class="content">
+        <article id="post1" class="post">
+            <h2>NFLS Toolkit</h2>
+            <p>发布日期：开发中……</p>
+            <p>NFLS Toolkit——您在南夫拉斯联邦可以找到的最强工具类软件！</p>
+            <p>集合了NVT与许多由初三二班工作室出品的实用小工具，让您的学习生活不再单调！</p>
+        </article>
+        <article id="post2" class="post">
+            <h2>NFLS Virus Trainer Alpha 6(Python重构版)</h2>
+            <p>发布日期：2024年8月11日</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer 6(Python重构版)是由初二二班工作室™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！NVT在手，我的安全我做主！</p>
+            <h3>特点</h3>
+            <p>纯Python编写，具有十分易用的GUI！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <p>支持在线更新！（由于技术原因，自动更新挂了，服务器数据爬不下来，只能直接下载）</p>
+            <p>我们承诺——永久免费！</p>
+            <h3>系统环境需求</h3>
+            <p>已测试过的系统环境</p>
+            <ul>
+                <li>Windows 11 23H2</li>
+                <li>Windows 10 x64 21H2</li>
+            </ul>
+            <p>软件编译环境：Python 3.12.2</p>
+            <p>可能不支持Windows 8以下的系统及32位的Windows</p>
+            <p>不支持Windows XP，MacOS及LINUX</p>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> </article>
+        <article id="post3" class="post">
+            <h2>NFLS Virus Trainer Alpha 6 C++版</h2>
+            <p>发布日期：开发中……</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer 6是由初二二班工作室™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！NVT在手，我的安全我做主！</p>
+            <h3>特点</h3>
+            <p>C++原生库开发，不需要额外安装任何组件！</p>
+            <p>这是我们（初二二班工作室）第二次加入GUI！相较于传统的命令行交互，我们简单易用的GUI绝对会大幅改善您的使用体验！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <p>支持在线更新！（由于技术原因，自动更新挂了，服务器数据爬不下来，只能直接下载）</p>
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post4" class="post">
+            <h2>Virus Trainer Alpha 5</h2>
+            <p>发布日期：未知/2023/6/1</p>
+            <h3>简介</h3>
+            <p>Virus Trainer 5是由KWY Tech™旗下的初二二班工作室™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>纯C++原生开发，简洁高效。</p>
+            <p>在这个版本中，我们重回采用了简洁明了的控制台交互。</p>
+            <p>我们去除了其他的不必要的组件，只保留了最核心的杀毒功能。双击启动直接一键查杀，给您最方便的使用体验！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <h3>下载</h3>
+            <p>[文件已丢失]</p>
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post5" class="post">
+            <h2>SY Virus Trainer</h2>
+            <p>发布日期：未知</p>
+            <h3>简介</h3>
+            <p>Virus Trainer 5是由KWY Tech™旗下的初二二班工作室™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>纯C++原生开发，简洁高效。</p>
+            <p>在这个版本中，我们重回采用了简洁明了的控制台交互。</p>
+            <p>我们去除了其他的不必要的组件，只保留了最核心的杀毒功能。双击启动直接一键查杀，给您最方便的使用体验！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <h3>下载</h3>
+            <p>[文件已丢失]</p>
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post6" class="post">
+            <h2>KWY Virus Trainer Alpha 4</h2>
+            <p>发布日期：未发布</p>
+            <h3>简介</h3>
+            <h4>-----------------AI 驱动安全-----------------</h4>
+            <p>KWY Virus Trainer Alpha 4是由KWY Tech™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>纯C++原生开发，简洁高效。</p>
+            <p>在这个版本中，我们创新性的使用AI辅助开发更强悍的杀毒软件！</p>
+            <p>我们全新加入的后台防护可以在后台随时检测病毒软件的运行，让马后炮式的事后补救不再存在！</p>
+            <h3>下载</h3>
+            <p>[项目已放弃]</p>
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post7" class="post">
+            <h2>KWY Virus Trainer Rebuild Alpha 3.2</h2>
+            <p>发布日期：2023年</p>
+            <h3>简介</h3>
+            <p>KWY Virus Trainer Rebuild Alpha 3.2是由KWY Tech™出品的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>纯C++原生开发，简洁高效。</p>
+            <p>基于控制台的命令行式交互，复古即是创新与潮流</p>
+            <p>我们加入了许多实用小工具，给您一站式的安全体验</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <h3>更新日志</h3>
+            <p><strong>2022-12-26 v0.4 rc1</strong></p>
+            <p>修复了一些已知bug，改了开屏字幕</p>
+            <p><strong>2022-12-31 v0.4 SE2023-Codename WNY</strong></p>
+            <p>特别版，改了开屏banner</p>
+            <p><strong>2023-1-6 v0.4 rc3</strong></p>
+            <p>修复了一些已知bug，枪毙了一些原本计划在v0.4中实现的功能</p>
+            <p><strong>2023-1-17 v0.4 rc4</strong></p>
+            <p>继续枪毙功能</p>
+            <p><strong>2023-1-21 v0.4 SE 2023-Codename MT</strong></p>
+            <p>修复了亿些已知bug，完成了激活机制</p>
+            <p></p>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[最终版本：2023/6/1发布]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post8" class="post">
+            <h2>KWY Virus Trainer Rebuild Alpha 3.1</h2>
+            <p>发布日期：2022/11/17</p>
+            <h3>简介</h3>
+            <p>KWY Virus Trainer Rebuild Alpha 3.1是由<a href="https://kwytech.github.io">KWY Tech™</a>基于初一二班工作室的NFLS Virus trainer 3 SP1（批处理版）使用C++重构而来的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>纯C++原生开发，简洁高效。</p>
+            <p>双击启动，一键杀毒。简单易用</p>
+            <p>基于控制台的命令行式交互，复古即是创新</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[点此下载]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post9" class="post">
+            <h2>NFLS Virus Trainer Alpha 3</h2>
+            <p>发布日期：2022/10/26 12:15</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer Rebuild Alpha 3是由<a href="https://kwytech.github.io">KWY Tech™</a>旗下的初一二班工作室的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>双击启动，一键杀毒。简单易用</p>
+            <p>基于控制台的命令行式交互，复古即是美</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <h3>注意事项</h3>
+            <p>本软件使用Quick Batch Compiler封装，由于未知原因，可能会被部分杀毒软件误报（包括Windows Defender）。建议退出其他杀毒软件或加入白名单后使用。</p>
+            <h3>更新说明</h3>
+            <h4>NVT3 SP1</h4>
+            <p>更新时间：2022/10/16 14:11</p>
+            <p>修复了解除隐藏的文件的部分由于盘符后为加星号导致解除失败的问题</p>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[点此下载]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post10" class="post">
+            <h2>NFLS Virus Trainer GBK Verson</h2>
+            <p>发布日期：2022/10/26</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer GBK版是由初一二班工作室独自的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>双击启动，一键杀毒。简单易用</p>
+            <p>基于CMD的脚本运行，兼容性极强！</p>
+            <p>我们首次采用了GBK编码，让中文显示不再乱码！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <p>可以一件解除被木马隐藏的文件与文件夹的隐藏状态！让您不再需要一个一个的去敲指令去解除隐藏！</p>
+            <h3>系统要求</h3>
+            <p>Windows Vista RTM+</p>
+            <p>CMD与taskkill指令未被禁用</p>
+            <h3>更新说明</h3>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[点此下载]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post11" class="post">
+            <h2>NFLS Virus Trainer 批处理封装系列</h2>
+            <p>发布日期：2022/9/13</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer是由初一二班工作室独自的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>双击启动，一键杀毒。简单易用</p>
+            <p>基于CMD的脚本运行，兼容性极强！</p>
+            <p>我们首次采用了GBK编码，让中文显示不再乱码！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <p>可以一件解除被木马隐藏的文件与文件夹的隐藏状态！让您不再需要一个一个的去敲指令去解除隐藏！</p>
+            <h3>系统要求</h3>
+            <p>Windows Vista RTM+</p>
+            <p>CMD与taskkill指令未被禁用</p>
+            <h3>注意事项</h3>
+            <p>本软件使用Quick Batch Compiler封装，由于未知原因，可能会被部分杀毒软件误报（包括Windows Defender）。建议退出其他杀毒软件或加入白名单后使用。</p>
+            <h3>更新说明</h3>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[点此下载]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <article id="post12" class="post">
+            <h2>NFLS Virus Trainer 批处理系列</h2>
+            <p>发布日期：2022/9</p>
+            <h3>简介</h3>
+            <p>NFLS Virus Trainer是由初一二班工作室独自的安全软件，该产品可以帮助南夫拉斯联邦的学子们的U盘远离各类病毒的侵扰！</p>
+            <h3>特点</h3>
+            <p>双击启动，一键杀毒。简单易用</p>
+            <p>基于CMD的脚本运行，兼容性极强！</p>
+            <p>支持查杀多达5种的病毒！在南联邦常见的病毒都可以杀灭！</p>
+            <ul>
+                <li>AvastSvc.exe</li>
+                <li>Rundll32.exe</li>
+                <li>StQQ.vbs</li>
+                <li>不知道叫什么的Autolt3脚本</li>
+                <li>用CMD的不知道什么东西</li>
+            </ul>
+            <p>可以一件解除被木马隐藏的文件与文件夹的隐藏状态！让您不再需要一个一个的去敲指令去解除隐藏！</p>
+            <h3>系统要求</h3>
+            <p>Windows Vista RTM+</p>
+            <p>CMD与taskkill指令未被禁用</p>
+            <h3>注意事项</h3>
+            <h3>更新说明</h3>
+            <h3>下载[需要管理员密钥]</h3>
+            <a href="https://Nanflas202202.github.io/NewHTMLs/AdministratorPage.html">[点此下载]</a> 
+            <!--<a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">点此立即前往下载中心下载</a> --> 
+        </article>
+        <!-- 更多文章 --> 
+    </main>
+</div>
+<footer>
+    <p>版权所有 © 2024 初三二班工作室</p>
+</footer>
+</body>
+</html>
