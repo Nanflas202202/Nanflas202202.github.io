@@ -1,88 +1,657 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>初二二班工作室——主页</title>  
-    <style>  
-        /* 全局样式 */  
-        body {  
-            margin: 0;  
-            padding: 0;  
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 使用类似于UWP的字体 */  
-            color: #333; /* 使用UWP常见的深色文本 */  
-            background-color: #fff; /* 使用白色背景 */  
-        }  
-  
-        /* 标题栏样式 */  
-        .title-bar {  
-            background-color: #0078D7; /* 使用UWP的蓝色 */  
-            color: #fff;  
-            padding: 10px;  
-            text-align: center;  
-            font-size: 20px;  
-            font-weight: bold;  
-        }  
-  
-        /* 导航栏样式 */  
-        .nav-bar {  
-            background-color: #E6E6E6; /* 使用浅灰色 */  
-            padding: 10px 0;  
-        }  
-  
-        .nav-bar ul {  
-            list-style-type: none;  
-            margin: 0;  
-            padding: 0;  
-            overflow: hidden;  
-        }  
-  
-        .nav-bar li {  
-            float: left;  
-        }  
-  
-        .nav-bar li a {  
-            display: block;  
-            color: #333;  
-            text-align: center;  
-            padding: 14px 16px;  
-            text-decoration: none;  
-        }  
-  
-        .nav-bar li a:hover {  
-            background-color: #ddd; /* 鼠标悬停时的高亮效果 */  
-        }  
-  
-        /* 内容区域样式 */  
-        .content {  
-            padding: 20px;  
-        }  
-  
-        /* 响应式布局 */  
-        @media screen and (max-width: 600px) {  
-            .nav-bar li {  
-                float: none;  
-                display: block;  
-            }  
-        }  
-    </style>  
-</head>  
-<body>  
-    <div class="title-bar">  
-        <h1>初二二班工作室</h1>  
-    </div>  
-    <div class="nav-bar">  
-        <ul>  
-            <li><a href="#">首页</a></li>  
-            <li><a href="https://Nanflas202202.github.io/NewHTMLs/About.html">关于我们</a></li>  
-            <li><a href="https://Nanflas202202.github.io/NewHTMLs/ProductCenter.html">产品中心</a></li>
-            <li><a href="https://Nanflas202202.github.io/NewHTMLs/DownloadCenter.html">下载中心</a></li>
-            <li><a href="https://huangyuzhe1121.github.io/images/RickRoll.mp4">联系我们</a></li>  
-        </ul>  
-    </div>  
-    <div class="content">  
-        <h2>欢迎来到初二二班工作室！</h2>  
-        <p>网站更新中，这可能需要几亿年</p>  
-    </div>  
-</body>  
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初三二班工作室 - Beyond Exception,Ignites Innovation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00A2FF;
+            --accent-yellow: #FFD700;
+            --accent-yellow-active: #FFB000; /* For active nav button */
+            --dark-blue: #001E3C;
+            --header-bg: rgba(0, 20, 40, 0.85);
+            --header-bg-scrolled: rgba(0, 15, 30, 0.95);
+            --nav-dropdown-bg: rgba(0, 20, 40, 0.98);
+            --light-gray: #f0f4f8;
+            --text-color: #E0EFFF;
+            --text-dark: #1a1a1a;
+            --button-skew: -15deg;
+            --font-family: 'Exo 2', 'Source Han Sans CN', 'Microsoft YaHei', sans-serif;
+            --header-height-initial: 67px; /* Default, will be updated by JS */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--primary-blue);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: var(--dark-blue);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header-main-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--header-bg);
+            border-bottom: 2px solid var(--accent-yellow);
+            backdrop-filter: blur(5px);
+            transition: background-color 0.3s ease;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .header.header--scrolled .header-main-bar {
+            background-color: var(--header-bg-scrolled);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            cursor: default;
+        }
+
+        .logo span {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+        }
+
+        .navigation {
+            display: flex;
+        }
+
+        .nav-button, .cta-button {
+            display: inline-block;
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            padding: 10px 20px;
+            margin-left: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            transform: skewX(var(--button-skew));
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-button span, .cta-button span {
+            display: inline-block;
+            transform: skewX(calc(var(--button-skew) * -1));
+        }
+
+        .nav-button:hover, .cta-button:hover {
+            background-color: #fff000;
+            transform: skewX(var(--button-skew)) scale(1.05);
+            box-shadow: 0 0 15px var(--accent-yellow);
+        }
+        
+        .nav-button.nav-button--active {
+            background-color: var(--accent-yellow-active);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.2), 0 0 10px var(--accent-yellow-active);
+        }
+        .nav-button.nav-button--active:hover { /* Keep active style on hover */
+             background-color: var(--accent-yellow-active);
+             transform: skewX(var(--button-skew)) scale(1.02); /* Slightly less scale on active hover */
+        }
+
+
+        .nav-button::before, .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: calc(100% - 4px);
+            height: calc(100% - 4px);
+            border: 1px solid rgba(0,0,0,0.2);
+            transform: skewX(0);
+            z-index: 0;
+        }
+
+        .nav-button span, .cta-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .small-button {
+            padding: 8px 15px;
+            font-size: 0.8em;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--accent-yellow);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        main {
+            padding-top: var(--header-height-initial); /* Crucial for spacing below sticky header */
+        }
+
+        .content-section {
+            display: none; /* Hide all sections by default */
+            padding: 60px 40px; /* Default padding for content sections */
+        }
+        .content-section.active-view {
+            display: block; /* Show active section */
+        }
+
+        /* Hero Section specific styling */
+        .hero-section { /* This is #home */
+            min-height: calc(100vh - var(--header-height-initial)); /* Ensure it tries to fill viewport below header */
+            margin-top: calc(-1 * var(--header-height-initial)); /* Pulls section up to go behind header */
+            padding-top: var(--header-height-initial); /* Pushes its content down to clear header */
+            /* Reset general content-section padding as hero has specific layout */
+            padding-left: 20px; 
+            padding-right: 20px;
+            padding-bottom: 60px; /* Or whatever bottom padding is desired for hero */
+            
+            display: flex; /* Overriding .active-view's display: block for flex layout */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: url('https://webstatic.hoyoverse.com/upload/event/2020/11/16/d237515aa00a6aac7237288e4660c5ae_1114601990550805738.png') no-repeat center center/cover;
+        }
+         /* Ensure hero-section also uses display:flex when active if it needs it */
+        .hero-section.active-view {
+            display: flex; 
+        }
+
+
+        .hero-bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 30, 60, 0.7);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            /* padding-top: var(--header-height-initial); Removed, handled by .hero-section's padding-top */
+        }
+
+        .hero-content h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            color: #FFF;
+            text-shadow: 0 0 10px var(--primary-blue), 0 0 20px var(--primary-blue);
+        }
+
+        .hero-content p {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+            color: var(--light-gray);
+        }
+
+        .cta-button {
+            font-size: 1.2em;
+            padding: 15px 30px;
+        }
+
+        /* Standard Content Sections (About, Projects, Contact) */
+        .content-section:not(.hero-section) { /* Styles for sections other than hero */
+             border-bottom: 1px solid rgba(255, 215, 0, 0.2); /* Keep border for these */
+        }
+        .content-section:not(.hero-section):last-of-type { /* Remove border from last non-hero section */
+             border-bottom: none;
+        }
+
+
+        .content-section h2 {
+            font-size: 2.5em;
+            color: var(--accent-yellow);
+            margin-bottom: 10px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent-yellow);
+        }
+
+        .content-section h2 .en-title {
+            font-size: 0.5em;
+            color: var(--primary-blue);
+            display: block;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+
+        .section-content {
+            max-width: 900px;
+            margin: 20px auto 0 auto;
+            font-size: 1.1em;
+        }
+
+        .section-content p {
+            margin-bottom: 15px;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .section-content ul li {
+            background: rgba(0, 162, 255, 0.1);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--accent-yellow);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .project-card {
+            background-color: rgba(0, 50, 80, 0.5);
+            border: 1px solid var(--primary-blue);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 162, 255, 0.3);
+        }
+
+        .project-card-image {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 15px;
+            border: 2px solid var(--accent-yellow);
+        }
+
+        .project-card h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #001528;
+            color: #aaa;
+            font-size: 0.9em;
+            border-top: 1px solid var(--primary-blue);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-content h1 {
+                font-size: 2.8em;
+            }
+            .hero-content p {
+                font-size: 1.2em;
+            }
+            .content-section h2 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-main-bar {
+                padding: 15px 20px;
+            }
+            .logo {
+                cursor: pointer;
+            }
+
+            .navigation {
+                flex-direction: column;
+                width: 100%;
+                background-color: var(--nav-dropdown-bg);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.35s ease-in-out, padding-top 0.35s ease-in-out, padding-bottom 0.35s ease-in-out;
+                border-bottom: 0px solid var(--accent-yellow);
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+
+            .navigation.active {
+                max-height: 60vh;
+                overflow-y: auto;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid var(--accent-yellow);
+            }
+
+            .nav-button {
+                margin: 10px 20px;
+                text-align: center;
+            }
+            .nav-button span {
+                display: block;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .content-section, .hero-section.active-view { /* Apply mobile padding to all active sections */
+                 padding: 40px 20px;
+            }
+             /* Hero section specific adjustments for mobile if needed */
+            .hero-section.active-view {
+                padding-top: calc(40px + var(--header-height-initial)); /* Ensure content visible below header */
+                min-height: calc(100vh - var(--header-height-initial)); /* Full viewport attempt */
+            }
+
+
+            .hero-content h1 {
+                font-size: 2.2em;
+            }
+            .hero-content p {
+                font-size: 1.1em;
+            }
+            .cta-button {
+                font-size: 1em;
+                padding: 12px 25px;
+            }
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo span {
+                font-size: 1.5em;
+            }
+            .hero-content h1 {
+                font-size: 1.8em;
+            }
+            .hero-content p {
+                font-size: 1em;
+            }
+            .content-section h2 {
+                font-size: 1.8em;
+            }
+            .section-content {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header" id="pageHeader">
+            <div class="header-main-bar">
+                <div class="logo" id="logoArea">
+                    <span>初三二班工作室</span>
+                </div>
+                <nav class="navigation" id="mainNav">
+                    <a href="#home" class="nav-button nav-button--active"><span>首页</span></a>
+                    <a href="#about" class="nav-button"><span>关于我</span></a>
+                    <a href="#projects" class="nav-button"><span>项目</span></a>
+                    <a href="#contact" class="nav-button"><span>联系</span></a>
+                </nav>
+                <button class="mobile-menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <section id="home" class="hero-section content-section active-view">
+                <div class="hero-content">
+                    <h1>欢迎来到初三二班工作室</h1>
+                    <p>网站建设中。</p>
+                    <a href="#projects" class="cta-button"><span>查看我的项目</span></a>
+                </div>
+                <div class="hero-bg-overlay"></div>
+            </section>
+
+            <section id="about" class="content-section">
+                <h2>关于初三二班工作室 / <span class="en-title">ABOUT ME</span></h2>
+                <div class="section-content">
+                    <p>我们是一支毫无干劲的团队 最擅长鸽项目。</p>
+                    <p>详细介绍迁移中……。</p>
+                </div>
+            </section>
+
+            <section id="projects" class="content-section">
+                <h2>我们的项目 / <span class="en-title">PROJECTS</span></h2>
+                <div class="section-content project-grid">
+                    <div class="project-card">
+                        <div class="project-card-image" style="background-image: url('https://via.placeholder.com/400x250/003366/FFFFFF?text=Project+Alpha');"></div>
+                        <h3>NFLS Virus Trainer</h3>
+                        <p>曾经的南夫拉斯联邦共和国最强的安全软件。更多信息迁移中...</p>
+                        <a href="./NC2S2025/ProductCenter.html" class="nav-button small-button"><span>了解更多（链接暂未绑定）</span></a>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-card-image" style="background-image: url('https://via.placeholder.com/400x250/004477/FFFFFF?text=Project+Beta');"></div>
+                        <h3>JIV Toolkit</h3>
+                        <p>下一代的课堂工具箱。开发中...</p>
+                        <a href="https://githubpage.errorsia.com" class="nav-button small-button"><span>了解更多（还没绑链接）</span></a>
+                    </div>
+                     <div class="project-card">
+                        <div class="project-card-image" style="background-image: url('https://via.placeholder.com/400x250/005588/FFFFFF?text=Project+Gamma');"></div>
+                        <h3>更多项目项目</h3>
+                        <p>官网迁移中...</p>
+                        <a href="./NC2S2025/ProductCenter.html" class="nav-button small-button"><span>了解更多</span></a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="content-section">
+                <h2>联系方式 / <span class="en-title">CONTACT</span></h2>
+                <div class="section-content">
+                    <p>你可以通过以下方式找到我：</p>
+                    <ul>
+                        <li>邮箱: feedback@elysianrealm.xyz</li>
+                        <li>GitHub: github.com/nanflas202202</li>
+                        
+                    </ul>
+                    <a href="mailto:feedback@elysianrealm,xyz" class="cta-button"><span>发送邮件</span></a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2022-2025 Nanflas CS2B Studio. All Lefts Reserved. -Errorsia Yusulif Studios-</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.getElementById('mainNav');
+            const logoArea = document.getElementById('logoArea');
+            const pageHeader = document.getElementById('pageHeader');
+            const headerMainBar = pageHeader.querySelector('.header-main-bar');
+            const root = document.documentElement;
+
+            const navButtons = mainNav.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('main > .content-section');
+            const ctaButtons = document.querySelectorAll('.cta-button[href^="#"]');
+
+
+            let lastScrollY = window.pageYOffset;
+            const scrollHideThreshold = 50; 
+            const headerScrollThreshold = 10;
+
+            function adjustLayoutForStickyHeader() {
+                const headerHeight = headerMainBar.offsetHeight;
+                root.style.setProperty('--header-height-initial', headerHeight + 'px');
+            }
+
+            function toggleMobileNav() {
+                mainNav.classList.toggle('active');
+                menuToggle.classList.toggle('active');
+            }
+
+            function switchView(targetId) {
+                if (!targetId || targetId === "#") return; // Basic check for valid targetId
+
+                // Hide all sections & deactivate all nav buttons
+                contentSections.forEach(section => section.classList.remove('active-view'));
+                navButtons.forEach(button => button.classList.remove('nav-button--active'));
+
+                const targetSection = document.getElementById(targetId.substring(1)); // Remove #
+                const targetButton = mainNav.querySelector(`.nav-button[href="${targetId}"]`);
+
+                if (targetSection) {
+                    targetSection.classList.add('active-view');
+                }
+                if (targetButton) {
+                    targetButton.classList.add('nav-button--active');
+                }
+
+                if (mainNav.classList.contains('active')) { // Close mobile nav if open
+                    toggleMobileNav();
+                }
+                
+                window.scrollTo({ top: 0, behavior: 'auto' }); // Scroll to top of page quickly
+            }
+
+            // Initialize layout adjustments
+            adjustLayoutForStickyHeader();
+            window.addEventListener('resize', adjustLayoutForStickyHeader);
+            
+            // Initial view setup (handled by classes in HTML, but good to ensure)
+            // If no section is active via HTML, activate #home by default
+            const isActiveSectionPresent = document.querySelector('.content-section.active-view');
+            if (!isActiveSectionPresent && contentSections.length > 0) {
+                 switchView('#home'); // Default to #home if nothing is pre-selected
+            }
+
+
+            // Event listeners for navigation
+            if (menuToggle) {
+                menuToggle.addEventListener('click', toggleMobileNav);
+            }
+            if (logoArea) {
+                logoArea.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) { toggleMobileNav(); }
+                });
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    switchView(targetId);
+                });
+            });
+
+            ctaButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    // Check if this CTA button points to a known content section
+                    if (document.getElementById(targetId.substring(1))?.classList.contains('content-section')) {
+                        switchView(targetId);
+                    } else {
+                        // Handle other types of CTA links if necessary (e.g., external or mailto)
+                        // For mailto, the default behavior is fine, so no e.preventDefault() strictly needed if handled above
+                        if (!targetId.startsWith('mailto:')) { // Simple check
+                             console.warn('CTA button target not found or not a section:', targetId);
+                        } else {
+                            window.location.href = targetId; // Allow mailto
+                        }
+                    }
+                });
+            });
+
+
+            // Scroll event for header style and mobile nav auto-hide
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.pageYOffset;
+                const isMobile = window.innerWidth <= 768;
+
+                if (isMobile && mainNav.classList.contains('active')) { // Only if nav is open
+                    if (currentScrollY > lastScrollY && currentScrollY > scrollHideThreshold) {
+                        toggleMobileNav(); // Close it
+                    }
+                }
+
+                if (currentScrollY > headerScrollThreshold) {
+                    pageHeader.classList.add('header--scrolled');
+                } else {
+                    pageHeader.classList.remove('header--scrolled');
+                }
+                lastScrollY = currentScrollY <= 0 ? 0 : currentScrollY;
+            }, false);
+        });
+    </script>
+</body>
 </html>
+
