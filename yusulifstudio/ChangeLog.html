@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新日志 - 您的软件名称</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /*
+         * =================================================================================================
+         * CSS 部分 - 风格与主页完全统一，新增日志页面专属样式
+         * =================================================================================================
+         */
+
+        /* 1. 基础与变量定义 (与主页完全相同)
+        ------------------------------------------------------------------------------------------------- */
+        :root {
+            --color-primary: #2196F3;       /* Blue 500 */
+            --color-primary-dark: #1976D2;  /* Blue 700 */
+            --color-primary-light: #BBDEFB; /* Blue 100 */
+            --color-accent: #FFC107;        /* Amber 500 */
+
+            --color-text-primary: #212121;
+            --color-text-secondary: #757575;
+            --color-text-on-primary: #FFFFFF;
+            --color-text-on-accent: #212121; 
+            --color-divider: #E0E0E0;
+            --background-color: #FAFAFA;
+            
+            /* 为日志标签新增颜色变量 */
+            --color-success: #4CAF50; /* Green 500 for 'New' */
+            --color-warning: #FF9800; /* Orange 500 for 'Improved' */
+            --color-danger: #F44336;  /* Red 500 for 'Fixed' */
+        }
+
+        /* 2. 全局样式 (与主页完全相同)
+        ------------------------------------------------------------------------------------------------- */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Roboto', 'Noto', sans-serif; font-size: 16px;
+            line-height: 1.7; color: var(--color-text-primary);
+            background-color: var(--background-color); margin: 0;
+            display: flex; flex-direction: column; min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        main { flex-grow: 1; }
+        h1, h2, h3, h4 { font-weight: 400; margin: 0; }
+        section { padding: 64px 0; }
+        .container { width: 90%; max-width: 960px; margin: 0 auto; } /* 日志页内容区可稍窄，更利于阅读 */
+        
+        .z-depth-1 { box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); }
+
+        /* 3. 复用组件 (与主页完全相同)
+        ------------------------------------------------------------------------------------------------- */
+        .app-bar {
+            background-color: var(--color-primary); color: var(--color-text-on-primary);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .app-bar .brand { font-size: 20px; font-weight: 500; text-decoration: none; color: var(--color-text-on-primary); }
+        .app-bar .desktop-nav { margin-left: auto; display: flex; align-items: center; }
+        .app-bar .desktop-nav a {
+            color: var(--color-text-on-primary); text-decoration: none; margin-left: 16px; padding: 8px 12px;
+            font-size: 14px; font-weight: 500; text-transform: uppercase;
+            border-radius: 4px; transition: background-color 0.3s ease;
+        }
+        .app-bar .desktop-nav a:hover { background-color: rgba(255,255,255,0.15); }
+        .app-bar .desktop-nav a.active { background-color: rgba(0,0,0,0.2); }
+        .app-bar .desktop-nav .github-link i { font-size: 24px; }
+        .hamburger-menu { display: none; }
+        
+        .side-nav { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #fff; z-index: 1002; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .side-nav.active { transform: translateX(280px); }
+        .side-nav .nav-header { padding: 24px 16px; background-color: var(--color-primary); color: var(--color-text-on-primary); font-size: 20px; font-weight: 500; }
+        .side-nav a { display: block; padding: 16px; text-decoration: none; color: var(--color-text-primary); font-weight: 500; }
+        .side-nav a:hover { background-color: rgba(0,0,0,0.05); }
+        .nav-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
+        .nav-overlay.active { opacity: 1; visibility: visible; }
+        
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0 16px; height: 36px; border: none; border-radius: 4px;
+            font-size: 14px; font-weight: 500; text-transform: uppercase; text-decoration: none;
+            cursor: pointer; transition: all 0.2s ease-in-out;
+            position: relative; overflow: hidden; user-select: none;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-accent { color: var(--color-text-on-accent); background-color: var(--color-accent); }
+        .btn .material-icons { margin-right: 8px; font-size: 18px; }
+
+        footer { background-color: #263238; color: rgba(255,255,255,0.7); padding: 64px 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 32px; }
+        .footer-col h4 { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 16px; }
+        .footer-col p { font-size: 14px; line-height: 1.8; }
+        .footer-col a { color: rgba(255,255,255,0.7); text-decoration: none; display: inline-block; margin: 0 12px 8px 0; transition: color 0.3s ease; }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 14px; }
+
+        /* 4. 更新日志页面专属样式
+        ------------------------------------------------------------------------------------------------- */
+        .page-header {
+            background-color: #fff;
+            padding: 48px 0;
+            border-bottom: 1px solid var(--color-divider);
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 34px;
+            font-weight: 400;
+            color: var(--color-primary);
+        }
+
+        .changelog-section {
+             background-color: var(--background-color);
+        }
+
+        .changelog-timeline {
+            position: relative;
+            padding: 32px 0;
+        }
+
+        .version-card {
+            background-color: #fff;
+            border-radius: 4px;
+            margin-bottom: 32px;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .version-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-divider);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .version-info h2 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .version-info .release-date {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+        
+        .changelog-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .changelog-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .changelog-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .change-label {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 16px;
+            color: #fff;
+            margin-right: 16px;
+            width: 70px;
+            text-align: center;
+        }
+        .label-new { background-color: var(--color-success); }
+        .label-improved { background-color: var(--color-warning); color: var(--color-text-on-accent); }
+        .label-fixed { background-color: var(--color-danger); }
+
+        .change-description {
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .fade-in-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* 5. 响应式调整
+        ------------------------------------------------------------------------------------------------- */
+        @media (max-width: 768px) {
+            .hamburger-menu { display: block; background: none; border: none; color: var(--color-text-on-primary); cursor: pointer; padding: 8px; border-radius: 50%; margin-left: auto; }
+            .app-bar .desktop-nav { display: none; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .version-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 顶部应用栏 (与主页相同，高亮当前页) -->
+     <header class="app-bar z-depth-1">
+        <a href="#" class="brand">NFLS Virus Trainer</a>
+        <nav class="desktop-nav">
+            <a herf="https://proxy.yusulif.xyz/">NC2S主页</a>
+            <a href="https://proxy.yusulif.xyz/yusulifstudio/NFLSVT.html">NVT主页</a>
+            <a href="./PrivacyPolicy.pdf">隐私政策</a>
+            <a href="#cta">下载</a>
+            <a href="https://github.com/nanflas202202/OpenNVT" target="_blank" class="github-link" title="GitHub 仓库"><i class="material-icons">code</i></a>
+        </nav>
+        <button class="hamburger-menu"><i class="material-icons">menu</i></button>
+    </header>
+    
+    <!-- 移动端侧滑菜单 -->
+    <div class="side-nav z-depth-2">
+        <div class="nav-header">导航</div>
+        <a href="index.html#features">产品特性</a>
+        <a href="index.html#opensource">开源精神</a>
+        <a href="changelog.html">更新日志</a>
+        <a href="https://github.com/your-repo/your-project" target="_blank">GitHub 仓库</a>
+    </div>
+    <div class="nav-overlay"></div>
+
+    <main>
+        <!-- 2. 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>更新日志</h1>
+                <p style="color: var(--color-text-secondary); margin-top: 8px;">我们一直在努力改进，这里记录了每一次进步的足迹。</p>
+            </div>
+        </section>
+
+        <!-- 3. 更新日志时间线 -->
+        <section class="changelog-section">
+            <div class="container changelog-timeline">
+
+                <!-- 版本 v1.1.0 -->
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.8.0</h2>
+                            <span class="release-date">发布于 2025年7月32日</span>
+                        </div>
+                        <a href="./Download/NVTA-0.8.0-Green.exe" id="cta" class="btn btn-accent"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">全面重构UI，赋予软件全新的视觉体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">引入了全新的主题系统，支持各种风格的主题供软件使用。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">在线更新再度上线，时刻保持最优体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">重构了底层代码，大幅提升使用体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">重构了底层架构，采用前后端分离设计，大幅提升稳定性与安全度。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了一些已知bug。</p>
+                        </li>
+                         <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了后台防护在一些情况下无法正确查杀病毒的问题。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.7.5.20250209</h2>
+                            <span class="release-date">发布于 2024年2月9日</span>
+                        </div>
+                        <!--<a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>-->
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">全面优化图形化界面，赋予软件更简单的使用体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入了工具箱功能，校园事项一站式解决。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">加入管理员校验，如果不在管理员权限下运行自动隐藏不可用功能，同时支持一键提权。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">优化了后台防护的查杀和提示逻辑。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">由于服务器被墙，在线更新暂时下线</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了一些已知bug。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.6.5.20240813</h2>
+                            <span class="release-date">发布于 2024年8月13日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入图形化界面，赋予软件更简单的使用体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入了后台防护系统，大幅提升软件的系统防护安全性。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">在线更新正式上线，时刻保持最优体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">重构了大量底层代码，大幅提升使用体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">重构了底层架构，采用前后端分离设计，大幅提升稳定性与安全度。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了一些已知bug。</p>
+                        </li>
+                         <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了后台防护在一些情况下无法正确查杀病毒的问题。</p>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 版本 v1.0.1 -->
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.5.0</h2>
+                            <span class="release-date">发布于 2024年6月1日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <h3>本版本基于V0.3.1.20221226版本开发</h3>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">优化了软件的使用逻辑，现在更新过程将在后台静默进行。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">去除了大量无用的功能。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了几个会导致杀毒与解锁隐藏文件失败问题，提升了软件运行的稳定性。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.6.0.20230310</h2>
+                            <span class="release-date">发布于 2023年3月10日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">优化</span>
+                            <p class="change-description">更新了版本号。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">更改了部分菜单结构。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了特定路径下会导致无法更改隐藏文件的隐藏状态的问题。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.5.0.20230216</h2>
+                            <span class="release-date">发布于 2023年2月16日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <h3>正式更名为SY Virus Trainer</h3>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入了“只杀毒”功能。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">更改了标题和开屏显示的文字，更换了激活码。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">优化了使用体验。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了一些已知bug。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.5.0.20230210</h2>
+                            <span class="release-date">发布于 2023年2月10日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">使用Python重构了项目，优化了代码可读性</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">增加了GUI，优化了软件易用性</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.4.0.20230124L</h2>
+                            <span class="release-date">发布于 2023年1月21日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <h3>本版本为KWY Virus TrainerV0.4的轻量版，仅包含核心杀毒功能</h3>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">基本功能正式完成。</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.4.0.20230121</h2>
+                            <span class="release-date">发布于 2023年1月21日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">激活功能正式完成，保障你的用户权益不受侵害</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">删除了部分不常用功能</p>
+                        </li>
+                        <li>
+                        <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了亿些已知bug</p>    
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.4.0.20221226</h2>
+                            <span class="release-date">发布于 2023年1月21日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">正式更名为KWY Virustrainer，更改开屏字幕</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入激活功能，保障你的用户权益不受侵害</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入互动式界面，使你的杀毒过程更加个性化，你可以指定你的操作，而不像前面的版本一样一次性全部完成</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入“工具箱”功能，拥有大量安全工具。</p>
+                        </li>
+                        <li>
+                        <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了亿些已知bug</p>    
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.3.1.20221117</h2>
+                            <span class="release-date">发布于 2022年12月26日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">加入开屏页，使得软件更加美观</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.3.1.20221117</h2>
+                            <span class="release-date">发布于 2022年11月17日</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-improved">优化</span>
+                            <p class="change-description">使用C++重构了代码，解决了容易被杀毒软件误报的问题</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.3.1 SP1</h2>
+                            <span class="release-date">发布于 2022年10月26日 14:11</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-fixed">修复</span>
+                            <p class="change-description">修复了解除隐藏的文件的部分存在解除文件隐藏状态失败的问题</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 版本 v1.0.0 -->
+                <div class="version-card z-depth-1 fade-in-up">
+                    <div class="version-header">
+                        <div class="version-info">
+                            <h2>v0.3.0</h2>
+                            <span class="release-date">发布于 2022年10月26日 12:15</span>
+                        </div>
+                        <a href="https://github.com/Nanflas202202/OpenNVT/releases" class="btn"><i class="material-icons">get_app</i>下载此版本</a>
+                    </div>
+                    <ul class="changelog-list">
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">有记录的首个版本，包含所有核心功能，我们迈出了第一步。</p>
+                        </li>
+                        <li>
+                            <span class="change-label label-new">新功能</span>
+                            <p class="change-description">支持查杀多达5种的病毒,在南联邦常见的病毒都可以杀灭</p>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- 4. 页脚 (与主页完全相同) -->
+   <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>关于Nanflas Virus Trainer</h4>
+                    <p>一个由NC2S开发和维护的免费、开源桌面软件，<br>致力于提供南夫拉斯的U盘中毒问题的最佳解决方案。</p>
+                </div>
+                 <div class="footer-col">
+                    <h4>快速链接</h4>
+                    <a href="#features">产品特性</a>
+                    <a href="#opensource">开源精神</a>
+                    <a href="./UpdateLog.html">更新日志</a>
+                    <a href="./PrivacyPolicy.pdf">隐私政策</a>
+                </div>
+                <div class="footer-col">
+                    <h4>社区与支持</h4>
+                    <a href="https://github.com/nanflas202202/opennvt" target="_blank">GitHub 仓库</a>
+                    <a href="https://github.com/nanflas202202/opennvt/issues" target="_blank">提交 Bug</a>
+                    <a href="mailto:feedback@elysianrealm.xyz">联系我们</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                 © 2025 EYStudio. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 涟漪效果
+        const rippleElements = document.querySelectorAll('.btn, .hamburger-menu');
+        rippleElements.forEach(el => {
+            el.addEventListener('click', function (e) {
+                const oldRipple = this.querySelector('.ripple');
+                if (oldRipple) oldRipple.remove();
+                const circle = document.createElement('span');
+                const diameter = Math.max(this.clientWidth, this.clientHeight);
+                const radius = diameter / 2;
+                const rect = this.getBoundingClientRect();
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${e.clientX - rect.left - radius}px`;
+                circle.style.top = `${e.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                this.appendChild(circle);
+                circle.addEventListener('animationend', () => circle.remove());
+            });
+        });
+
+        // 移动端导航抽屉
+        const hamburger = document.querySelector('.hamburger-menu');
+        const sideNav = document.querySelector('.side-nav');
+        const navOverlay = document.querySelector('.nav-overlay');
+        const navLinks = document.querySelectorAll('.side-nav a');
+        const closeNav = () => {
+            sideNav.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        const openNav = () => {
+            sideNav.classList.add('active');
+            navOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        hamburger.addEventListener('click', (e) => { e.stopPropagation(); openNav(); });
+        navOverlay.addEventListener('click', closeNav);
+        navLinks.forEach(link => link.addEventListener('click', closeNav));
+
+        // 滚动加载动画
+        const faders = document.querySelectorAll('.fade-in-up');
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const appearOnScroll = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        faders.forEach(fader => { appearOnScroll.observe(fader); });
+    });
+
+    const rippleStyle = document.createElement('style');
+    rippleStyle.innerHTML = `
+        .ripple {
+            position: absolute; border-radius: 50%;
+            transform: scale(0); animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        .app-bar .ripple, .side-nav .ripple { background: rgba(255, 255, 255, 0.4); }
+        .btn .ripple { background: rgba(255, 255, 255, 0.4); }
+        .btn-accent .ripple { background: rgba(0, 0, 0, 0.2); }
+        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+    `;
+    document.head.appendChild(rippleStyle);
+    </script>
+</body>
+</html>
