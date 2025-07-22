@@ -1,1 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanflas Virus Trainer -- 为校园信息安全而生</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <style>
+        /*
+         * =================================================================================================
+         * CSS 部分 - 最终版 - 蓝黄配色 (严格遵循MD1规范) & 产品信息定制
+         * =================================================================================================
+         */
+
+        /* 1. 基础与变量定义
+        ------------------------------------------------------------------------------------------------- */
+        :root {
+            /* 
+             * Material Design 1 蓝黄配色系统
+             * 主色: Blue 500 - 专业、信赖、科技感。
+             * 强调色: Amber 500 - 活力、醒目，用于关键CTA元素。
+             */
+            --color-primary: #2196F3;       /* Blue 500 */
+            --color-primary-dark: #1976D2;  /* Blue 700 */
+            --color-primary-light: #BBDEFB; /* Blue 100 */
+            --color-accent: #FFC107;        /* Amber 500 */
+
+            --color-text-primary: #212121;
+            --color-text-secondary: #757575;
+            --color-text-on-primary: #FFFFFF;
+            /* Amber 500 上的文字用黑色更清晰 */
+            --color-text-on-accent: #212121; 
+            --color-divider: #E0E0E0;
+            --background-color: #FAFAFA;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Roboto', 'Noto', sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--color-text-primary);
+            background-color: var(--background-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        main { flex-grow: 1; }
+        h1, h2, h3, h4, h5, h6 { font-weight: 400; margin: 0; }
+        img { max-width: 100%; height: auto; display: block; }
+        section { padding: 80px 0; }
+
+        .container { width: 90%; max-width: 1140px; margin: 0 auto; }
+        .section-title { text-align:center; margin-bottom: 64px; }
+        .section-title .headline { margin-bottom: 16px; }
+        .section-title .body-1 { color: var(--color-text-secondary); max-width: 700px; margin: 0 auto; }
+
+        .z-depth-1 { box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); }
+        .z-depth-2 { box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); }
+
+        /* 2. 组件
+        ------------------------------------------------------------------------------------------------- */
+        .app-bar {
+            background-color: var(--color-primary);
+            color: var(--color-text-on-primary);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .app-bar .brand { font-size: 20px; font-weight: 500; text-decoration: none; color: var(--color-text-on-primary); }
+        .app-bar .desktop-nav { margin-left: auto; display: flex; align-items: center; }
+        .app-bar .desktop-nav a {
+            color: var(--color-text-on-primary); text-decoration: none; margin-left: 16px; padding: 8px 12px;
+            font-size: 14px; font-weight: 500; text-transform: uppercase;
+            border-radius: 4px; transition: background-color 0.3s ease;
+        }
+        .app-bar .desktop-nav a:hover { background-color: rgba(255,255,255,0.15); }
+        .app-bar .desktop-nav .github-link i { font-size: 24px; }
+        .hamburger-menu { display: none; }
+
+        .side-nav { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: #fff; z-index: 1002; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .side-nav.active { transform: translateX(280px); }
+        .side-nav .nav-header { padding: 24px 16px; background-color: var(--color-primary); color: var(--color-text-on-primary); font-size: 20px; font-weight: 500; }
+        .side-nav a { display: block; padding: 16px; text-decoration: none; color: var(--color-text-primary); font-weight: 500; }
+        .side-nav a:hover { background-color: rgba(0,0,0,0.05); }
+        .nav-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
+        .nav-overlay.active { opacity: 1; visibility: visible; }
+        
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0 24px; height: 48px; border: none; border-radius: 4px;
+            font-size: 16px; font-weight: 500; text-transform: uppercase; text-decoration: none;
+            cursor: pointer; transition: all 0.2s ease-in-out;
+            position: relative; overflow: hidden; user-select: none;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn-accent { color: var(--color-text-on-accent); background-color: var(--color-accent); }
+        .btn .material-icons { margin-right: 12px; font-size: 20px; }
+
+        /* 3. 页面区域
+        ------------------------------------------------------------------------------------------------- */
+        .hero-section {
+            background: linear-gradient(45deg, var(--color-primary), var(--color-primary-dark));
+            color: var(--color-text-on-primary);
+            padding: 100px 0; text-align: center;
+        }
+        .hero-section .display-2 { margin-bottom: 24px; font-weight: 500; }
+        .hero-section .subhead { max-width: 650px; margin: 0 auto 40px auto; opacity: 0.9; }
+        .hero-section .download-wrapper { margin-bottom: 16px; }
+        .hero-section .system-req { font-size: 14px; color: var(--color-primary-light); opacity: 0.8; }
+        .trust-badges { margin-top: 40px; display: flex; justify-content: center; gap: 32px; }
+        .trust-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+        .feature-item { text-align: center; padding: 24px; }
+        .feature-item .icon-wrapper {
+            margin: 0 auto 24px auto; width: 80px; height: 80px;
+            border-radius: 50%; background-color: var(--color-primary-light);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .feature-item:hover .icon-wrapper { background-color: var(--color-accent); transform: rotate(15deg) scale(1.1); }
+        .feature-item:hover .icon-wrapper .material-icons { color: var(--color-text-on-accent); }
+        .feature-item .icon-wrapper .material-icons { font-size: 40px; color: var(--color-primary); transition: color 0.3s ease; }
+
+        /* 新增: 开源模块 */
+        .opensource-section { background-color: #fff; }
+        .opensource-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 48px; }
+        .code-showcase { background-color: #2d2d2d; color: #ccc; padding: 24px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 14px; overflow-x: auto; }
+        .code-showcase .code-comment { color: #6a9955; }
+        .code-showcase .code-keyword { color: #569cd6; }
+        .code-showcase .code-class { color: #4ec9b0; }
+        .code-showcase .code-string { color: #ce9178; }
+        .opensource-content .title { margin-bottom: 16px; }
+        .opensource-content .body-1 { margin-bottom: 32px; }
+        
+        /* 页脚 */
+        footer { background-color: #263238; color: rgba(255,255,255,0.7); padding: 64px 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 32px; }
+        .footer-col h4 { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 16px; }
+        .footer-col p { font-size: 14px; line-height: 1.8; }
+        .footer-col a { color: rgba(255,255,255,0.7); text-decoration: none; display: inline-block; margin: 0 12px 8px 0; transition: color 0.3s ease; }
+        .footer-col a:hover { color: #fff; }
+        .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 14px; }
+        
+        /* 动画与响应式 */
+        .fade-in-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .fade-in-up.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 992px) {
+            .opensource-grid { grid-template-columns: 1fr; }
+            .code-showcase { margin-top: 32px; }
+        }
+        @media (max-width: 768px) {
+            section { padding: 64px 0; }
+            .display-2 { font-size: 36px; line-height: 44px; }
+            .app-bar { padding: 0 16px; }
+            .app-bar .desktop-nav { display: none; }
+            .hamburger-menu { display: block; background: none; border: none; color: var(--color-text-on-primary); cursor: pointer; padding: 8px; border-radius: 50%; margin-left: auto; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-bar z-depth-1">
+        <a href="#" class="brand">NFLS Virus Trainer</a>
+        <nav class="desktop-nav">
+            <a herf="https://proxy.yusulif.xyz/">NC2S主页</a>
+            <a href="#features">产品特性</a>
+            <a href="./ChangeLog.html">更新日志</a>
+            <a href="#cta">下载</a>
+            <a href="https://github.com/nanflas202202/OpenNVT" target="_blank" class="github-link" title="GitHub 仓库"><i class="material-icons">code</i></a>
+        </nav>
+        <button class="hamburger-menu"><i class="material-icons">menu</i></button>
+    </header>
+
+    <div class="side-nav z-depth-2">
+        <div class="nav-header">导航</div>
+        <a href="#features">产品特性</a>
+        <a href="#opensource">开源精神</a>
+        <a href="#cta">立即下载</a>
+        <a href="https://github.com/nanflas202202/opennvt" target="_blank">GitHub 仓库</a>
+    </div>
+    <div class="nav-overlay"></div>
+
+    <main>
+        <section id="home" class="hero-section">
+            <div class="container fade-in-up">
+                <h1 class="display-2">一个纯粹、免费、开源的安全工具</h1>
+                <p class="subhead">由纯Python匠心打造，为解决您——南夫拉斯联邦的人民的U盘中毒而生。我们相信，强大的功能可以与简洁的设计完美共存。</p>
+                <div class="download-wrapper">
+                    <a href="#cta" class="btn btn-accent z-depth-1">
+                        <i class="material-icons">get_app</i>
+                        免费下载
+                    </a>
+                </div>
+                <p class="system-req">需要 Windows 8 或更新版本 (Windows 7 正在适配中)</p>
+
+                <div class="trust-badges">
+                    <div class="trust-badge"><i class="material-icons">check_circle</i> 完全免费</div>
+                    <div class="trust-badge"><i class="material-icons">code</i> 开源精神</div>
+                    <div class="trust-badge"><i class="material-icons">speed</i> 原生性能</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="section-title fade-in-up">
+                    <h2 class="headline">为效率而设计</h2>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-item fade-in-up" style="transition-delay: 100ms;">
+                        <div class="icon-wrapper"><i class="material-icons">memory</i></div>
+                        <h3 class="title">原生性能</h3>
+                        <p class="body-1">基于 PySide6 构建，充分利用系统原生组件，带来轻快、流畅、低资源占用的使用体验。</p>
+                    </div>
+                    <div class="feature-item fade-in-up" style="transition-delay: 200ms;">
+                        <div class="icon-wrapper"><i class="material-icons">brush</i></div>
+                        <h3 class="title">精美设计</h3>
+                        <p class="body-1">严格遵循KISS规范，每一个像素都精心打磨，为您提供一个赏心悦目的工作界面。</p>
+                    </div>
+                    <div class="feature-item fade-in-up" style="transition-delay: 300ms;">
+                        <div class="icon-wrapper"><i class="material-icons">hub</i></div>
+                        <h3 class="title">开放透明</h3>
+                        <p class="body-1">我们坚信开源的力量。软件完全免费且代码公开，您可以审查、修改并参与到我们的开发中来。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="opensource" class="opensource-section">
+            <div class="container">
+                 <div class="section-title fade-in-up">
+                    <h2 class="headline">为开发者与极客打造</h2>
+                    <p class="body-1">我们和您一样，热爱编写简洁而强大的代码。</p>
+                </div>
+                <div class="opensource-grid fade-in-up">
+                    <div class="opensource-content">
+                        <h3 class="title">由 Python 强力驱动</h3>
+                        <p class="body-1">我们选择 Python 是因为它无与伦比的开发效率和庞大的生态系统。借助 PySide6 (Qt for Python)，我们得以将 Python 的灵活性与 Qt 的高性能图形界面结合起来。</p>
+                        <p class="body-1">欢迎访问我们的 GitHub 仓库，查看源码，提交您的 Issue 或 Pull Request。让我们一起把它变得更好！</p>
+                        <a href="https://github.com/nanflas202202/opennvt" target="_blank" class="btn btn-accent">
+                            <i class="material-icons">code</i>
+                            查看源码 & 贡献
+                        </a>
+                    </div>
+                    <div class="code-showcase z-depth-1">
+                        <pre><code><span class="code-comment"># main_window.py</span>
+<span class="code-keyword">import</span> sys
+<span class="code-keyword">from</span> PySide6.QtWidgets <span class="code-keyword">import</span> (
+    QApplication, QMainWindow, QPushButton
+)
+
+<span class="code-keyword">class</span> <span class="code-class">MainWindow</span>(QMainWindow):
+    <span class="code-keyword">def</span> __init__(self):
+        <span class="code-class">super</span>().__init__()
+        self.setWindowTitle(<span class="code-string">"NVT Alpha 8"</span>)
+        
+        button = QPushButton(<span class="code-string">"Welcome to the world of NC2S!"</span>)
+        button.setCheckable(<span class="code-class">True</span>)
+        self.setCentralWidget(button)
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cta" class="cta-section">
+            <div class="container fade-in-up">
+                <h2 class="headline">准备好开始了吗？</h2>
+                <p class="subhead" style="color: var(--color-text-secondary);">立即下载，体验这款为 Windows 精心打造的开源工具。无需安装，即下即用。</p>
+                <a href="./Download/NVTA-0.8.0-Green.exe" class="btn btn-accent z-depth-2" style="margin-top: 16px;">
+                    <i class="material-icons">get_app</i>
+                    免费下载最新版
+                </a>
+                <p class="caption" style="margin-top: 16px;">支持在线自动更新，时刻保持最佳体验</p>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>关于Nanflas Virus Trainer</h4>
+                    <p>一个由NC2S开发和维护的免费、开源桌面软件，<br>致力于提供南夫拉斯的U盘中毒问题的最佳解决方案。</p>
+                </div>
+                 <div class="footer-col">
+                    <h4>快速链接</h4>
+                    <a href="#features">产品特性</a>
+                    <a href="#opensource">开源精神</a>
+                    <a href="./ChangeLog.html">更新日志</a>
+                    <a href="./PrivacyPolicy.pdf">隐私政策</a>
+                </div>
+                <div class="footer-col">
+                    <h4>社区与支持</h4>
+                    <a href="https://github.com/nanflas202202/opennvt" target="_blank">GitHub 仓库</a>
+                    <a href="https://github.com/nanflas202202/opennvt/issues" target="_blank">提交 Bug</a>
+                    <a href="mailto:feedback@elysianrealm.xyz">联系我们</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                 © 2025 EYStudio. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rippleElements = document.querySelectorAll('.btn, .hamburger-menu');
+        rippleElements.forEach(el => {
+            el.addEventListener('click', function (e) {
+                const oldRipple = this.querySelector('.ripple');
+                if (oldRipple) oldRipple.remove();
+                const circle = document.createElement('span');
+                const diameter = Math.max(this.clientWidth, this.clientHeight);
+                const radius = diameter / 2;
+                const rect = this.getBoundingClientRect();
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${e.clientX - rect.left - radius}px`;
+                circle.style.top = `${e.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                this.appendChild(circle);
+                circle.addEventListener('animationend', () => circle.remove());
+            });
+        });
+
+        const hamburger = document.querySelector('.hamburger-menu');
+        const sideNav = document.querySelector('.side-nav');
+        const navOverlay = document.querySelector('.nav-overlay');
+        const navLinks = document.querySelectorAll('.side-nav a');
+        const closeNav = () => {
+            sideNav.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        const openNav = () => {
+            sideNav.classList.add('active');
+            navOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        hamburger.addEventListener('click', (e) => { e.stopPropagation(); openNav(); });
+        navOverlay.addEventListener('click', closeNav);
+        navLinks.forEach(link => link.addEventListener('click', closeNav));
+
+        const faders = document.querySelectorAll('.fade-in-up');
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const appearOnScroll = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        faders.forEach(fader => { appearOnScroll.observe(fader); });
+    });
+
+    const rippleStyle = document.createElement('style');
+    rippleStyle.innerHTML = `
+        .ripple {
+            position: absolute; border-radius: 50%;
+            transform: scale(0); animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        .app-bar .ripple, .side-nav .ripple { background: rgba(255, 255, 255, 0.4); }
+        .btn-accent .ripple { background: rgba(0, 0, 0, 0.2); }
+        @keyframes ripple-animation { to { transform: scale(4); opacity: 0; } }
+    `;
+    document.head.appendChild(rippleStyle);
+    </script>
+</body>
+</html>
