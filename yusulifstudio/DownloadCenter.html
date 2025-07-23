@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NC2S - 产品下载中心</title>
+    <!-- 引入一套图标库，用于界面图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入在线字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- CSS样式已内联封装进HTML文件 -->
+    <style>
+        /* --- 全局设计变量 (天蓝-黄色主题) --- */
+        :root {
+            --bg-gradient-start: #56CCF2;
+            --bg-gradient-end: #2F80ED;
+            --accent-yellow: #FFC300;
+            --accent-red: #f44336;
+            --text-primary: #1A2C47;
+            --text-secondary: #5B6A82;
+            --text-on-accent: #1A2C47;
+            --text-on-blue: #ffffff; /* [修改] 在天蓝色按钮上的文字颜色 */
+            --card-bg: rgba(255, 255, 255, 0.5);
+            --card-border: rgba(255, 255, 255, 0.7);
+            --card-border-hover: var(--accent-yellow);
+            /* [修改] 侧边栏按钮颜色变量 */
+            --sidebar-btn-bg: rgba(47, 128, 237, 0.4);
+            --sidebar-btn-bg-hover: rgba(47, 128, 237, 0.6);
+            --sidebar-btn-active-bg: #ffffff; /* 激活时为白色 */
+        }
+
+        /* --- 基础与布局 --- */
+        body {
+            background-color: var(--bg-gradient-start);
+            background-image: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            font-family: 'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* --- 顶部导航栏 --- */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .header-nav { display: flex; gap: 0.5rem; }
+        .nav-btn {
+            background: var(--accent-yellow);
+            color: var(--text-on-accent);
+            text-decoration: none;
+            font-weight: 700;
+            transform: skewX(-15deg);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn .content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.5rem;
+            transform: skewX(15deg);
+        }
+        .nav-btn:hover {
+            filter: brightness(1.1);
+            transform: skewX(-15deg) scale(1.05);
+        }
+
+        .user-account-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .user-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        .user-info-item i {
+            color: var(--accent-yellow);
+            font-size: 1.2rem;
+        }
+
+        /* --- 主体内容区 --- */
+        .content-wrapper {
+            display: flex;
+            gap: 2.5rem;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .product-area { flex: 1; }
+        .filter-sidebar { flex: 0 0 220px; }
+        
+        .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .area-header h2 {
+            font-size: 2rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .area-header h2 .highlight { color: var(--accent-yellow); }
+
+        .product-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .product-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid transparent;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: none; /* JS会控制显示/隐藏 */
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .product-card.visible { display: flex; } /* JS添加这个class来显示卡片 */
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 8px 25px rgba(47, 128, 237, 0.2);
+        }
+        
+        .card-left { display: flex; align-items: center; gap: 1.5rem; flex: 4; }
+        .card-right { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+
+        .product-icon-container { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+        .product-icon { width: 100%; height: 100%; border-radius: 16px; }
+        .tag {
+            position: absolute; padding: 0.2rem 0.8rem;
+            font-size: 0.8rem; font-weight: 700; color: white;
+            transform: skewX(-20deg); border-radius: 4px;
+        }
+        .tag-featured { top: -8px; left: -12px; background: var(--accent-red); }
+        .tag-version { bottom: -8px; right: -12px; background: var(--accent-yellow); color: var(--text-on-accent); }
+        
+        .product-name { font-size: 1.3rem; margin: 0; }
+        .product-description { font-size: 0.9rem; color: var(--text-secondary); margin: 0.3rem 0 0.8rem 0; }
+        .platform-support { display: flex; gap: 1rem; font-size: 1.5rem; color: var(--text-secondary); }
+        .platform-support i:hover { color: var(--accent-yellow); }
+
+        .action-btn {
+            border: none; padding: 0.7rem 1.5rem; border-radius: 10px;
+            font-size: 1rem; font-weight: bold; color: var(--text-on-accent);
+            background-color: var(--accent-yellow); cursor: pointer;
+            transition: filter 0.2s, transform 0.2s;
+            width: 100%; max-width: 180px; display: flex;
+            align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .action-btn:hover { filter: brightness(1.1); transform: scale(1.05); }
+
+        /* --- 筛选侧边栏 (配色修改) --- */
+        .filter-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+        .filter-btn {
+            background: var(--sidebar-btn-bg); /* [修改] 默认天蓝色背景 */
+            text-decoration: none;
+            font-weight: 500;
+            transform: skewX(-15deg);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .filter-btn .content {
+            color: var(--text-on-blue); /* [修改] 默认白色文字 */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            transform: skewX(15deg);
+        }
+        .filter-btn:hover { background: var(--sidebar-btn-bg-hover); }
+        .filter-btn.active {
+            background: var(--sidebar-btn-active-bg); /* [修改] 激活时白色背景 */
+            font-weight: 700;
+        }
+        .filter-btn.active .content {
+            color: var(--text-primary); /* [修改] 激活时深色文字 */
+        }
+        .filter-btn i { width: 24px; text-align: center; font-size: 1.2rem; }
+
+        /* --- [新增] "暂无产品"提示信息样式 --- */
+        .no-products-info {
+            display: none; /* 默认隐藏 */
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .no-products-info i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+    <!-- 顶部导航栏 -->
+    <header class="main-header">
+        <div class="header-nav">
+            <a href="./NC2SProducts.html" class="nav-btn"><span class="content"><i class="fa-solid fa-chevron-left"></i> 返回</span></a>
+            <a href="https://proxy.yusulif.xyz" class="nav-btn"><span class="content"><i class="fa-solid fa-house"></i> 主页</span></a>
+        </div>
+        <div class="user-account-info">
+            <div class="user-info-item"><i class="fa-solid fa-user"></i> 欢迎, 用户！</div>
+            <div class="user-info-item"><!--<i class="fa-solid fa-coins">--><i class="fa-solid fa-download"></i> 当前资源: 1</div>
+            <div class="user-info-item"><i class="fa-solid fa-bell"></i> 更新信息 (0)</div>
+        </div>
+    </header>
+
+    <!-- 主体内容区 -->
+    <div class="content-wrapper">
+        <!-- 左侧产品列表 -->
+        <main class="product-area">
+            <div class="area-header">
+                <h2><i class="fa-solid fa-cubes highlight"></i> <span id="list-title">全部产品</span></h2>
+            </div>
+            <div class="product-list">
+                 <!-- 产品卡片 1 -->
+                <article class="product-card" data-category="desktop">
+                    <div class="card-left">
+                        <div class="product-icon-container">
+                            <img src="https://i.imgur.com/gAAMB6b.png" alt="NVT 产品图标" class="product-icon">
+                            <div class="tag tag-featured"><span>最新更新</span></div>
+                            <div class="tag tag-version"><span>个人版</span></div>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Nanflas Virus Trainer</h3>
+                            <p class="product-description">全方位校园电脑安全防护系统</p>
+                            <div class="platform-support"><i class="fa-brands fa-windows" title="Windows"></i><!--<i class="fa-brands fa-linux" title="Linux"></i><i class="fa-brands fa-apple" title="macOS"></i>--></div>
+                        </div>
+                    </div>
+                    <div class="card-right"><a href="/Download/NVTA-0.8.0-Green.exe"><button class="action-btn"><i class="fa-solid fa-download"></i>立即下载</button></a></div>
+                </article>
+                <!----
+                <!-- 产品卡片 2 -\->
+                <article class="product-card" data-category="devtool">
+                    <div class="card-left">
+                        <div class="product-icon-container">
+                            <img src="https://i.imgur.com/k2H9OQE.png" alt="星尘数据 产品图标" class="product-icon">
+                            <div class="tag tag-version"><span>专业版</span></div>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">星尘数据 (Stardust)</h3>
+                            <p class="product-description">大数据可视化分析与处理平台</p>
+                            <div class="platform-support"><i class="fa-brands fa-react" title="React"></i><i class="fa-brands fa-python" title="Python"></i></div>
+                        </div>
+                    </div>
+                    <div class="card-right"><button class="action-btn"><i class="fa-solid fa-sliders"></i> 进入控制台</button></div>
+                </article>
+                
+                <!-- 产品卡片 3 -\->
+                <article class="product-card" data-category="cloud">
+                     <div class="card-left">
+                        <div class="product-icon-container">
+                            <img src="https://i.imgur.com/2s4yXfN.png" alt="云图存储 产品图标" class="product-icon">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">云图存储 (Nimbus Drive)</h3>
+                            <p class="product-description">安全可靠的企业级云对象存储服务</p>
+                            <div class="platform-support"><i class="fa-solid fa-server" title="Server API"></i><i class="fa-brands fa-aws" title="AWS Compatible"></i></div>
+                        </div>
+                    </div>
+                    <div class="card-right"><button class="action-btn"><i class="fa-solid fa-arrow-right-to-bracket"></i> 访问</button></div>
+                </article>
+
+                <!-- 产品卡片 4 -\->
+                <article class="product-card" data-category="mobile">
+                     <div class="card-left">
+                        <div class="product-icon-container">
+                            <img src="https://i.imgur.com/8QpLqJd.png" alt="量子信使 产品图标" class="product-icon">
+                             <div class="tag tag-featured"><span>新上架</span></div>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">量子信使 (Quantum)</h3>
+                            <p class="product-description">端到端加密的安全即时通讯工具</p>
+                            <div class="platform-support"><i class="fa-brands fa-android" title="Android"></i><i class="fa-brands fa-apple" title="iOS"></i></div>
+                        </div>
+                    </div>
+                    <div class="card-right"><button class="action-btn"><i class="fa-solid fa-mobile-screen-button"></i> 获取应用</button></div>
+                </article>
+                ---->
+                <!-- [新增] "暂无产品"的提示信息元素 -->
+                <div id="no-products-message" class="no-products-info">
+                    <i class="fa-solid fa-box-open"></i>
+                    此分类下暂无产品
+                </div>
+            </div>
+        </main>
+
+        <!-- 右侧筛选栏 -->
+        <aside class="filter-sidebar">
+            <a href="#" class="filter-btn active" data-filter="all"><span class="content"><i class="fa-solid fa-border-all"></i> 全部产品</span></a>
+            <a href="#" class="filter-btn" data-filter="desktop"><span class="content"><i class="fa-solid fa-desktop"></i> 桌面应用</span></a>
+            <a href="#" class="filter-btn" data-filter="cloud"><span class="content"><i class="fa-solid fa-cloud"></i> 云服务</span></a>
+            <a href="#" class="filter-btn" data-filter="devtool"><span class="content"><i class="fa-solid fa-code"></i> 开发工具</span></a>
+            <a href="#" class="filter-btn" data-filter="mobile"><span class="content"><i class="fa-solid fa-mobile-screen"></i> 移动应用</span></a>
+            <a href="#" class="filter-btn" data-filter="analytics"><span class="content"><i class="fa-solid fa-chart-pie"></i> 数据分析</span></a>
+        </aside>
+    </div>
+</div>
+
+<!-- JavaScript 交互脚本 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const productCards = document.querySelectorAll('.product-card');
+        const listTitle = document.getElementById('list-title');
+        const noProductsMessage = document.getElementById('no-products-message');
+
+        // 初始化时显示所有产品
+        filterProducts('all');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // 阻止链接默认的跳转行为
+
+                // 移除所有按钮的 'active' class
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // 给当前点击的按钮添加 'active' class
+                this.classList.add('active');
+
+                // 获取并更新主列表标题
+                const filterText = this.querySelector('.content').textContent.trim();
+                listTitle.textContent = filterText;
+
+                // 根据点击的按钮进行筛选
+                const categoryFilter = this.getAttribute('data-filter');
+                filterProducts(categoryFilter);
+            });
+        });
+
+        function filterProducts(filter) {
+            let visibleProductsCount = 0; // [新增] 用于计数的变量
+
+            productCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                
+                // 如果筛选是 'all' 或者卡片分类匹配，就显示卡片，否则隐藏
+                if (filter === 'all' || cardCategory === filter) {
+                    card.classList.add('visible');
+                    visibleProductsCount++; // [新增] 可见产品数量加1
+                } else {
+                    card.classList.remove('visible');
+                }
+            });
+
+            // [新增] 检查可见产品数量，决定是否显示"暂无产品"信息
+            if (visibleProductsCount === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
+                noProductsMessage.style.display = 'none';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>```
