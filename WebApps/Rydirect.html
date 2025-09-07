@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitle">Rydirect - 终极网页跳转生成器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- 全局与基础样式 --- */
+        :root {
+            --font-main: 'Roboto', 'Segoe UI', 'M PLUS Rounded 1c', 'Google Sans', 'Noto Sans JP', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --transition-speed-fast: 0.2s;
+            --transition-speed-normal: 0.3s;
+            --transition-speed-slow: 0.5s;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main); color: var(--text-primary); background-color: var(--bg-color);
+            /* --- 默认背景图 --- */
+            background-image: var(--bg-image, url('./RydirectBackGround.png'));
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+            transition: background-color var(--transition-speed-normal) ease, background-image var(--transition-speed-slow) ease; overflow: hidden;
+        }
+        .container-wrapper { width: 100%; max-width: 950px; animation: fadeIn 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        main {
+            width: 100%; padding: 2rem 2.5rem; background: var(--card-bg); border-radius: var(--card-border-radius);
+            box-shadow: var(--card-shadow); border: 1px solid var(--card-border); backdrop-filter: var(--card-backdrop-filter);
+            -webkit-backdrop-filter: var(--card-backdrop-filter); transition: all var(--transition-speed-normal) ease; position: relative; z-index: 2;
+        }
+        .hidden { display: none !important; }
+
+        /* --- Global Controls & Settings Panel --- */
+        .global-controls { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-bottom: 1rem; padding: 0 1rem; }
+        .control-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--control-border-color); background: var(--control-bg); cursor: pointer; transition: all var(--transition-speed-fast) ease; }
+        .control-btn:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 0 10px var(--accent-focus-shadow); }
+        .icon { width: 22px; height: 22px; fill: var(--control-text-color); }
+        [data-theme-mode="light"] .icon-moon { display: block; } [data-theme-mode="light"] .icon-sun { display: none; }
+        [data-theme-mode="dark"] .icon-moon { display: none; } [data-theme-mode="dark"] .icon-sun { display: block; }
+
+        #settings-panel {
+            position: fixed; top: 0; right: -100%; width: 320px; height: 100%; background: var(--card-bg); box-shadow: var(--card-shadow);
+            padding: 2rem; z-index: 1001; transition: right var(--transition-speed-normal) ease-in-out, bottom var(--transition-speed-normal) ease-in-out; border-left: 1px solid var(--card-border);
+            backdrop-filter: var(--card-backdrop-filter); -webkit-backdrop-filter: var(--card-backdrop-filter); display: flex; flex-direction: column;
+        }
+        #settings-panel.open { right: 0; }
+        #settings-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; pointer-events: none; transition: opacity var(--transition-speed-normal) ease; }
+        #settings-overlay.open { opacity: 1; pointer-events: auto; }
+        #settings-panel h2 { margin-bottom: 1rem; } #settings-panel .setting-group { margin-top: 1.5rem; }
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .theme-btn, .lang-btn { padding: 10px; font-size: 14px; cursor: pointer; border: 1px solid var(--input-border-color); background: var(--input-bg); color: var(--text-primary); border-radius: var(--input-border-radius); transition: all var(--transition-speed-fast) ease; }
+        .theme-btn.active, .lang-btn.active { background: var(--accent-color); color: var(--accent-text-color); border-color: var(--accent-color); font-weight: bold; }
+        .lang-selector { display: flex; gap: 10px; }
+        .input-group { display: flex; gap: 8px; }
+
+        /* --- Mobile Experience --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; } main { padding: 1.5rem; }
+            #settings-panel { width: 100%; height: auto; max-height: 80vh; top: auto; bottom: -100%; right: 0; border-radius: 20px 20px 0 0; border-left: none; border-top: 1px solid var(--card-border); }
+            #settings-panel.open { bottom: 0; }
+        }
+
+        /* --- UI Components --- */
+        h1 { font-size: 2em; font-weight: 700; color: var(--text-header); }
+        .header-p { margin-bottom: 2em; line-height: 1.7; color: var(--text-secondary); }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .input, select, textarea { width: 100%; padding: 12px 15px; border-radius: var(--input-border-radius); border: 1px solid var(--input-border-color); background-color: var(--input-bg); color: var(--text-primary); font-size: 1rem; font-family: var(--font-main); transition: all var(--transition-speed-fast) ease; }
+        textarea { resize: vertical; min-height: 80px; }
+        .input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px var(--accent-focus-shadow); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .checkbox-group { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .checkbox-group label { display: flex; align-items: center; gap: 0.5em; cursor: pointer; transition: opacity var(--transition-speed-fast); }
+        .checkbox-group label.disabled { cursor: not-allowed; opacity: 0.5; }
+        .button { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; padding: 12px 24px; font-size: 1rem; font-weight: 500; color: var(--btn-primary-text); background: var(--btn-primary-bg); border: 1px solid var(--btn-primary-border); border-radius: var(--btn-border-radius); cursor: pointer; transition: all var(--transition-speed-fast) ease; box-shadow: var(--btn-shadow); user-select: none; }
+        .button:hover { background: var(--btn-primary-hover-bg); box-shadow: var(--btn-hover-shadow); transform: translateY(-2px); }
+        .tabs { display: flex; border-bottom: 1px solid var(--input-border-color); margin-bottom: 2rem; }
+        .tab { flex-shrink: 0; padding: 12px 20px; cursor: pointer; border: none; background: transparent; color: var(--text-secondary); font-size: 1rem; border-bottom: 3px solid transparent; margin-bottom: -1px; transition: all var(--transition-speed-normal) ease; white-space: nowrap; }
+        .tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); font-weight: 600; }
+        .tab-content { display: none; } .tab-content.active { display: block; animation: contentFadeIn 0.5s; }
+        @keyframes contentFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #resultUrl { padding: 1rem; background-color: var(--input-bg); border: 1px solid var(--input-border-color); border-radius: 8px; word-break: break-all; font-family: var(--font-mono); }
+        #compression-info { font-size: 0.8em; color: var(--text-secondary); margin-top: 0.5rem; }
+        #steganography-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--input-border-color); }
+        .radio-group label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-right: 1.5rem; }
+
+        /* --- Modal & Notification --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity var(--transition-speed-normal); }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); padding: 2rem; border-radius: var(--card-border-radius); box-shadow: var(--card-shadow); min-width: 320px; animation: fadeIn 0.3s; }
+        .notification { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 10px); padding: 12px 24px; background-color: #333; color: white; border-radius: 8px; opacity: 0; transition: all 0.3s ease; pointer-events: none; z-index: 10000; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .notification.show { opacity: 1; transform: translate(-50%, 0); }
+        
+        /* ======================== THEMES ======================== */
+        body { --control-bg: #fff; --control-border-color: #ccc; --control-text-color: #555; }
+        body[data-theme-mode="dark"] { --control-bg: #333; --control-border-color: #555; --control-text-color: #eee; }
+        body.theme-material { --font-main: 'Roboto', sans-serif; --btn-border-radius: 4px; --input-border-radius: 4px; --card-border-radius: 8px; }
+        body.theme-material[data-theme-mode="light"] { --bg-color: #f5f5f5; --card-bg: #ffffff; --card-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); --card-border: #e0e0e0; --text-primary: #212121; --accent-color: #2196F3; --accent-text-color: #fff; --input-bg: #f5f5f5; --input-border-color: #bdbdbd; --btn-primary-bg: #2196F3; --btn-primary-hover-bg: #1976D2; --btn-primary-text: #fff; }
+        body.theme-material[data-theme-mode="dark"] { --bg-color: #121212; --card-bg: #1e1e1e; --card-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.3); --card-border: rgba(255, 255, 255, 0.12); --text-primary: #e0e0e0; --accent-color: #64b5f6; --accent-text-color: #000; --input-bg: #333; --input-border-color: #555; --btn-primary-bg: #64b5f6; --btn-primary-hover-bg: #90caf9; --btn-primary-text: #000; }
+        .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transform: scale(0); animation: ripple 600ms linear; pointer-events: none; } @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        body.theme-winui2 { --font-main: 'Segoe UI', sans-serif; --btn-border-radius: 2px; --input-border-radius: 2px; --card-border-radius: 8px; }
+        body.theme-winui2[data-theme-mode="light"] { --card-bg: rgba(255, 255, 255, 0.7); --card-shadow: 0 4px 20px rgba(0,0,0,0.1); --card-border: rgba(0, 0, 0, 0.1); --card-backdrop-filter: blur(20px) saturate(150%); --text-primary: #000; --accent-color: #0078D4; --accent-text-color: #fff; --input-bg: rgba(255, 255, 255, 0.5); --input-border-color: rgba(0, 0, 0, 0.2); --btn-primary-bg: #0078D4; --btn-primary-hover-bg: #106EBE; --btn-primary-text: #fff; }
+        body.theme-winui2[data-theme-mode="dark"] { --card-bg: rgba(40, 40, 40, 0.75); --card-shadow: 0 8px 32px rgba(0,0,0,0.3); --card-border: rgba(255, 255, 255, 0.12); --card-backdrop-filter: blur(25px) saturate(150%); --text-primary: #fff; --accent-color: #4CC2FF; --accent-text-color: #000; --input-bg: rgba(255, 255, 255, 0.06); --input-border-color: rgba(255, 255, 255, 0.1); --btn-primary-bg: #4CC2FF; --btn-primary-hover-bg: #78D4FF; --btn-primary-text: #000; }
+        body.theme-metro { --font-main: 'Segoe UI', sans-serif; --btn-border-radius: 0; --input-border-radius: 0; --card-border-radius: 0; --btn-shadow: none !important; --btn-hover-shadow: none !important; }
+        body.theme-metro .button:hover { transform: none; } body.theme-metro h1 { font-weight: 300; font-size: 2.8em; }
+        body.theme-metro[data-theme-mode="light"] { --bg-color: #ffffff; --card-bg: #ffffff; --card-shadow: none; --card-border: #1a1a1a; --text-primary: #1a1a1a; --accent-color: #e51400; --accent-text-color: #fff; --input-bg: #fff; --input-border-color: #ccc; --btn-primary-bg: #1a1a1a; --btn-primary-hover-bg: #333; --btn-primary-text: #fff; }
+        body.theme-metro[data-theme-mode="dark"] { --bg-color: #000000; --card-bg: #000000; --card-shadow: none; --card-border: #fff; --text-primary: #fff; --accent-color: #00a300; --accent-text-color: #fff; --input-bg: #000; --input-border-color: #555; --btn-primary-bg: #fff; --btn-primary-hover-bg: #eee; --btn-primary-text: #000; }
+        body.theme-liquid-glass { --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; --btn-border-radius: 12px; --input-border-radius: 10px; --card-border-radius: 20px; }
+        @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        body.theme-liquid-glass { animation: aurora 15s ease infinite; background-size: 400% 400%; }
+        body.theme-liquid-glass[data-theme-mode="light"] { --bg-image-overlay: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #ffdde1, #fbc2eb); --card-bg: rgba(255, 255, 255, 0.6); --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2); --card-border: rgba(255, 255, 255, 0.8); --card-backdrop-filter: blur(25px); --text-primary: #1d1d1f; --accent-color: #007aff; --accent-text-color: #fff; --input-bg: rgba(255, 255, 255, 0.7); --input-border-color: rgba(0, 0, 0, 0.1); --btn-primary-bg: #007aff; --btn-primary-hover-bg: #0062cc; --btn-primary-text: #fff; }
+        body.theme-liquid-glass[data-theme-mode="dark"] { --bg-image-overlay: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #596164); --card-bg: rgba(40, 40, 40, 0.5); --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); --card-border: rgba(255, 255, 255, 0.15); --card-backdrop-filter: blur(30px); --text-primary: #f5f5f7; --accent-color: #0a84ff; --accent-text-color: #fff; --input-bg: rgba(255, 255, 255, 0.1); --input-border-color: rgba(255, 255, 255, 0.2); --btn-primary-bg: #0a84ff; --btn-primary-hover-bg: #3398ff; --btn-primary-text: #fff; }
+        body.theme-liquid-glass, body.theme-winui2, body.theme-winui3, body.theme-sakura { background-image: var(--bg-image, url('background.jpg')), var(--bg-image-overlay, none); background-blend-mode: overlay; }
+        body.theme-material3 { --font-main: 'Google Sans', 'Roboto', sans-serif; --btn-border-radius: 100px; --input-border-radius: 8px; --card-border-radius: 16px; }
+        body.theme-material3[data-theme-mode="light"] { --bg-color: #f7f9ff; --card-bg: #ffffff; --card-shadow: 0 1px 2px rgba(0,0,0,0.1); --card-border: #e0e0e0; --text-primary: #1f1f1f; --accent-color: #4285F4; --accent-text-color: #fff; --input-bg: #f1f3f4; --input-border-color: #f1f3f4; --btn-primary-bg: #4285F4; --btn-primary-hover-bg: #3367D6; --btn-primary-text: #fff; }
+        body.theme-material3[data-theme-mode="dark"] { --bg-color: #121212; --card-bg: #1e1e1e; --card-shadow: 0 1px 2px rgba(0,0,0,0.3); --card-border: #3c4043; --text-primary: #e8eaed; --accent-color: #8ab4f8; --accent-text-color: #202124; --input-bg: #3c4043; --input-border-color: #3c4043; --btn-primary-bg: #8ab4f8; --btn-primary-hover-bg: #aecbfa; --btn-primary-text: #202124; }
+        body.theme-winui3 { --font-main: 'Segoe UI Variable', 'Segoe UI', sans-serif; --btn-border-radius: 8px; --input-border-radius: 8px; --card-border-radius: 12px; }
+        body.theme-winui3[data-theme-mode="light"] { --card-bg: rgba(255, 255, 255, 0.85); --card-shadow: 0 4px 12px rgba(0,0,0,0.08); --card-border: rgba(0, 0, 0, 0.08); --card-backdrop-filter: blur(50px); --text-primary: #000; --accent-color: #005FB8; --accent-text-color: #fff; --input-bg: rgba(0, 0, 0, 0.04); --input-border-color: rgba(0, 0, 0, 0.1); --btn-primary-bg: #005FB8; --btn-primary-hover-bg: #004588; --btn-primary-text: #fff; }
+        body.theme-winui3[data-theme-mode="dark"] { --bg-color: #202020; --card-bg: rgba(40, 40, 40, 0.85); --card-shadow: 0 4px 12px rgba(0,0,0,0.2); --card-border: rgba(255, 255, 255, 0.08); --card-backdrop-filter: blur(50px); --text-primary: #fff; --accent-color: #60CDFF; --accent-text-color: #000; --input-bg: rgba(255, 255, 255, 0.07); --input-border-color: rgba(255, 255, 255, 0.1); --btn-primary-bg: #60CDFF; --btn-primary-hover-bg: #7ee1ff; --btn-primary-text: #000; }
+        body.theme-sakura { --font-main: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif; --btn-border-radius: 12px; --input-border-radius: 10px; --card-border-radius: 16px; }
+        body.theme-sakura[data-theme-mode="light"] { --bg-image-overlay: linear-gradient(120deg, #fce0e3 0%, #f9d9f4 100%); --card-bg: rgba(255, 255, 255, 0.7); --card-shadow: 0 6px 24px rgba(255, 153, 204, 0.2); --card-border: rgba(255, 255, 255, 0.5); --card-backdrop-filter: blur(10px); --text-primary: #5c3b5a; --accent-color: #ff85a2; --accent-text-color: #fff; --input-bg: rgba(255, 255, 255, 0.8); --input-border-color: #ffc2d4; --btn-primary-bg: #ff85a2; --btn-primary-hover-bg: #ff6b8f; --btn-primary-text: #fff; }
+        body.theme-sakura[data-theme-mode="dark"] { --bg-image-overlay: linear-gradient(120deg, #2c3e50 0%, #4b6cb7 100%); --card-bg: rgba(30, 40, 70, 0.7); --card-shadow: 0 6px 24px rgba(0,0,0, 0.3); --card-border: rgba(255, 255, 255, 0.1); --card-backdrop-filter: blur(10px); --text-primary: #e0e5ff; --accent-color: #a78bfa; --accent-text-color: #fff; --input-bg: rgba(255, 255, 255, 0.05); --input-border-color: #a78bfa80; --btn-primary-bg: #a78bfa; --btn-primary-hover-bg: #c4b5fd; --btn-primary-text: #fff; }
+        #sakura-petals { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .petal { position: absolute; background: var(--accent-color); border-radius: 50% 0; opacity: 0.7; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
+    </style>
+</head>
+<body class="theme-metro" data-theme-mode="light">
+    <div id="sakura-petals"></div>
+    <!-- SVG Icon Definitions -->
+    <svg width="0" height="0" style="position:absolute"><symbol id="icon-sun" viewBox="0 0 24 24"><path fill="currentColor" d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.64 5.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 5.64zm12.73 12.73c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zM18.36 5.64l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06c.39-.39.39-1.02 0-1.41s-1.02-.39-1.41 0zM6.7 17.3c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.05 14.83c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06z"/></symbol><symbol id="icon-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M9.37 5.51A7.35 7.35 0 0 0 9.1 7.5c0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 18.2 14.9 20 12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8c1.58 0 3.04.46 4.28 1.25-.26-.03-.53-.05-.81-.05-2.35 0-4.4.85-6.1 2.31z"/></symbol><symbol id="icon-settings" viewBox="0 0 24 24"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12-.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></symbol></svg>
+
+    <div id="redirect-overlay" class="hidden"></div><div id="notification" class="notification"></div>
+    <div id="settings-overlay"></div>
+    <div id="settings-panel">
+        <h2 data-i18n="settingsTitle">界面设置</h2>
+        <div class="setting-group">
+            <h3 data-i18n="themeTitle" style="margin-bottom: 0.5rem;">主题</h3>
+            <div class="theme-grid">
+                <button class="theme-btn active" data-theme="metro">Metro</button><button class="theme-btn" data-theme="material">Material</button><button class="theme-btn" data-theme="material3">Material You</button>
+                <button class="theme-btn" data-theme="winui2">WinUI 2</button><button class="theme-btn" data-theme="winui3">WinUI 3</button>
+                <button class="theme-btn" data-theme="liquid-glass">Glass</button><button class="theme-btn" data-theme="sakura">Sakura</button>
+            </div>
+        </div>
+        <div class="setting-group">
+            <h3 data-i18n="langTitle" style="margin-bottom: 0.5rem;">语言</h3>
+            <div class="lang-selector">
+                <button class="lang-btn" data-lang="zh-CN">中文</button><button class="lang-btn" data-lang="en">EN</button><button class="lang-btn" data-lang="ja">日本語</button>
+            </div>
+        </div>
+        <div class="setting-group">
+            <h3 data-i18n="bgTitle" style="margin-bottom: 0.5rem;">背景图设置</h3>
+            <div class="input-group">
+                <input type="text" id="bg-url-input" class="input" data-i18n-placeholder="bgUrlPlaceholder">
+                <button id="bg-apply-btn" class="button" data-i18n="bgApplyBtn">应用</button>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <label for="bg-upload-input" class="button" style="flex:1;" data-i18n="bgUploadBtn">上传</label>
+                <input type="file" id="bg-upload-input" accept="image/*" class="hidden">
+                <button id="bg-reset-btn" class="button" style="background: var(--input-bg); color: var(--text-primary);" data-i18n="bgResetBtn">重置</button>
+            </div>
+        </div>
+    </div>
+    <div id="password-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3 data-i18n="passModalTitle">需要密码</h3>
+            <p data-i18n="passModalDesc" style="margin: 1rem 0; color: var(--text-secondary);">这个链接已被密码保护。</p>
+            <div class="form-group"><label for="password-input" data-i18n="passModalLabel">请输入密码：</label><input type="password" id="password-input" class="input"></div>
+            <button id="password-submit-btn" class="button" data-i18n="confirmBtn">确认</button>
+            <button id="password-cancel-btn" class="button" style="background: var(--input-bg); color: var(--text-primary);" data-i18n="cancelBtn">取消</button>
+        </div>
+    </div>
+    
+    <div class="container-wrapper">
+        <div class="global-controls">
+            <button class="control-btn" id="mode-toggle" title="Switch Mode"><svg class="icon icon-sun"><use xlink:href="#icon-sun"></use></svg><svg class="icon icon-moon"><use xlink:href="#icon-moon"></use></svg></button>
+            <button class="control-btn" id="settings-btn" title="Settings"><svg class="icon icon-settings"><use xlink:href="#icon-settings"></use></svg></button>
+        </div>
+        <main>
+            <header><h1 data-i18n="appTitle">RyRedirect</h1><p data-i18n="appDesc" class="header-p">终极网页跳转生成器，支持高级编码、短链接、密码保护与文件隐写。</p></header>
+            <div class="tabs">
+                <button class="tab active" data-tab="generator" data-i18n="tabGenerator">生成器 & 隐写</button>
+                <button class="tab" data-tab="go" data-i18n="tabGo">快速跳转</button>
+            </div>
+
+            <div id="generator" class="tab-content active">
+                <div class="form-group"><label for="targetUrl" data-i18n="targetUrlLabel">目标网址 (URL)</label><input type="url" id="targetUrl" class="input" placeholder="https://example.com" value="https://www.bilibili.com"></div>
+                <div class="form-grid">
+                    <div class="form-group"><label for="caesarPlace" data-i18n="caesarPlaceLabel">凯撒移位位数</label><input type="number" id="caesarPlace" class="input" value="13" min="1"></div>
+                    <div class="form-group"><label for="caesarCode" data-i18n="encodingLabel">编码格式</label><select id="caesarCode" class="input"><option value="5">UTF-8</option><option value="1">ASCII</option><option value="2">GBK</option><option value="3">GB2312</option><option value="4">Unicode</option></select></div>
+                    <div class="form-group"><label for="password" data-i18n="passwordLabel">密码保护 (可选)</label><input type="password" id="password" class="input" data-i18n-placeholder="passwordPlaceholder"></div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label><input type="checkbox" id="compact-mode-check" checked><span data-i18n="compactModeLabel">紧凑模式 (短链接)</span></label>
+                    <label id="reverse-label"><input type="checkbox" id="reverse-check"><span data-i18n="reverseLabel">Base64倒转</span></label>
+                    <label><input type="checkbox" id="hidden-redirect-check"><span data-i18n="hiddenRedirectLabel">隐形跳转</span></label>
+                </div>
+                <button id="generateBtn" class="button reveal" data-i18n="generateBtn">生成链接</button>
+                
+                <div id="resultContainer" class="hidden" style="margin-top: 2rem;">
+                    <h3 data-i18n="resultTitle">生成结果:</h3>
+                    <div id="resultUrl"></div>
+                    <div id="compression-info"></div>
+                    <button id="copyBtn" class="button" data-i18n="copyBtn" style="margin-top:1rem">复制链接</button>
+                </div>
+
+                <div id="steganography-section" class="hidden">
+                    <h3 data-i18n="stegEmbedTitle">写入文件 (文件隐写)</h3>
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label data-i18n="stegContentLabel">要写入的内容</label>
+                        <div class="radio-group" style="margin-bottom: 0.5rem; display:flex;">
+                            <label><input type="radio" name="embed-source" value="link" checked> <span data-i18n="stegRadioLink">使用上方链接</span></label>
+                            <label><input type="radio" name="embed-source" value="custom"> <span data-i18n="stegRadioCustom">使用自定义文本</span></label>
+                        </div>
+                        <textarea id="custom-embed-text" class="input hidden" data-i18n-placeholder="stegCustomPlaceholder"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="file-to-embed" data-i18n="stegEmbedFileLabel">选择一个文件</label>
+                        <input type="file" id="file-to-embed" class="input">
+                    </div>
+                    <button id="embedBtn" class="button" data-i18n="stegEmbedBtn">写入并下载</button>
+                    <button id="use-default-img-btn" class="button" data-i18n="stegDefaultBtn" style="background: var(--input-bg); color: var(--text-primary);">使用默认图片</button>
+                </div>
+            </div>
+
+            <div id="go" class="tab-content">
+                <h3 data-i18n="goTitle">快速跳转</h3><p data-i18n="goDesc" style="margin-bottom:1.5rem;color:var(--text-secondary)">在此处粘贴完整的跳转链接，或上传文件以直接跳转。</p>
+                <div class="form-group"><label for="go-input" data-i18n="goInputLabel">输入完整链接</label><input type="text" id="go-input" class="input" data-i18n-placeholder="goInputPlaceholder"></div>
+                <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--input-border-color);">
+                <h3 data-i18n="stegExtractTitle">从文件中解析</h3><div class="form-group" style="margin-top:1rem;"><label for="go-file-input" data-i18n="goFileLabel">选择文件</label><input type="file" id="go-file-input" class="input"></div>
+                <button id="go-btn" class="button reveal" data-i18n="goBtn">跳转 (Go)</button>
+            </div>
+        </main>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- App State & Constants ---
+    const ENCODING_MAP = { '1': 'windows-1252', '2': 'gbk', '3': 'gb2312', '4': 'utf-16le', '5': 'utf-8' };
+    const STEG_MARKER = '//--RYD--//';
+    const PASS_SEPARATOR = '|||';
+    const B85_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~";
+    const body = document.body;
+    let redirectParams = null, currentLang = 'zh-CN';
+    const DEFAULT_IMAGE_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; // 1x1 PNG
+
+    // --- Localization (i18n) Module ---
+    const translations = {
+        'en': { pageTitle: "Rydirect - Ultimate URL Generator", appTitle: "RyRedirect", appDesc: "The ultimate URL redirect generator, supporting advanced encoding, short links, password protection, and file steganography.", settingsTitle: "Settings", themeTitle: "Theme", langTitle: "Language", bgTitle: "Background", bgUrlPlaceholder: "Paste image URL...", bgApplyBtn: "Apply", bgUploadBtn: "Upload", bgResetBtn: "Reset", tabGenerator: "Generator & Steg", tabGo: "Quick Go", targetUrlLabel: "Target URL", caesarPlaceLabel: "Caesar Shift", encodingLabel: "Encoding", passwordLabel: "Password (Optional)", passwordPlaceholder: "Leave blank for no password", compactModeLabel: "Compact Mode (Short Link)", reverseLabel: "Reverse Base64", hiddenRedirectLabel: "Hidden Redirect", generateBtn: "Generate Link", stegEmbedTitle: "Embed into File (Steganography)", stegContentLabel: "Content to Embed", stegRadioLink: "Generated Link", stegRadioCustom: "Custom Text", stegCustomPlaceholder: "Enter custom text here...", stegEmbedFileLabel: "Select a file", stegEmbedBtn: "Embed & Download", stegDefaultBtn: "Use Default Image", goTitle: "Quick Go", goDesc: "Paste a full redirect link, or upload a file to go directly.", goInputLabel: "Enter full link", goInputPlaceholder: "Paste here...", goFileLabel: "Select a file", goBtn: "Go", stegExtractTitle: "Extract from File", passModalTitle: "Password Required", passModalDesc: "This link is password protected.", passModalLabel: "Please enter the password:", confirmBtn: "Confirm", cancelBtn: "Cancel", copyBtn: "Copy Link", resultTitle: "Generated Result:", errUrlShift: "URL and shift number cannot be empty.", errEncoding: "Encoding failed", errDecoding: "Decoding failed", errNoData: "No redirect data found in file.", errNoInput: "Please enter a link or select a file.", errNoFile: "Please select a file first.", successGenerated: "Link generated successfully!", successCopied: "Copied to clipboard!", successEmbedded: "Data embedded, download starting!", successExtracted: "Data extracted successfully!", successBg: "Background updated!" },
+        'zh-CN': { pageTitle: "Rydirect - 终极网页跳转生成器", appTitle: "RyRedirect", appDesc: "终极网页跳转生成器，支持高级编码、短链接、密码保护与文件隐写。", settingsTitle: "界面设置", themeTitle: "主题", langTitle: "语言", bgTitle: "背景图设置", bgUrlPlaceholder: "粘贴图片链接...", bgApplyBtn: "应用", bgUploadBtn: "上传", bgResetBtn: "重置", tabGenerator: "生成器 & 隐写", tabGo: "快速跳转", targetUrlLabel: "目标网址 (URL)", caesarPlaceLabel: "凯撒移位位数", encodingLabel: "编码格式", passwordLabel: "密码保护 (可选)", passwordPlaceholder: "留空则不加密", compactModeLabel: "紧凑模式 (短链接)", reverseLabel: "Base64倒转", hiddenRedirectLabel: "隐形跳转", generateBtn: "生成链接", stegEmbedTitle: "写入文件 (文件隐写)", stegContentLabel: "要写入的内容", stegRadioLink: "使用上方链接", stegRadioCustom: "使用自定义文本", stegCustomPlaceholder: "在此输入自定义文本...", stegEmbedFileLabel: "选择一个文件", stegEmbedBtn: "写入并下载", stegDefaultBtn: "使用默认图片", goTitle: "快速跳转", goDesc: "在此处粘贴完整的跳转链接，或上传文件以直接跳转。", goInputLabel: "输入完整链接", goInputPlaceholder: "粘贴到这里...", goFileLabel: "选择文件", goBtn: "跳转 (Go)", stegExtractTitle: "从文件中解析", passModalTitle: "需要密码", passModalDesc: "这个链接已被密码保护。", passModalLabel: "请输入密码：", confirmBtn: "确认", cancelBtn: "取消", copyBtn: "复制链接", resultTitle: "生成结果:", errUrlShift: "网址和移位数不能为空。", errEncoding: "编码失败", errDecoding: "解码失败", errNoData: "文件中未找到跳转数据。", errNoInput: "请输入链接或选择文件。", errNoFile: "请先选择一个文件。", successGenerated: "链接生成成功！", successCopied: "已复制到剪贴板！", successEmbedded: "数据已写入，下载开始。", successExtracted: "成功解析出数据！", successBg: "背景已更新！" },
+        'ja': { pageTitle: "Rydirect - 究極のURLジェネレーター", appTitle: "RyRedirect", appDesc: "高度なエンコーディング、短縮リンク、パスワード保護、ファイルステガノグラフィをサポートする究極のURLリダイレクトジェネレーター。", settingsTitle: "設定", themeTitle: "テーマ", langTitle: "言語", bgTitle: "背景設定", bgUrlPlaceholder: "画像URLを貼り付け...", bgApplyBtn: "適用", bgUploadBtn: "アップロード", bgResetBtn: "リセット", tabGenerator: "生成 & 難読化", tabGo: "クイックジャンプ", targetUrlLabel: "ターゲットURL", caesarPlaceLabel: "シーザーシフト数", encodingLabel: "エンコーディング", passwordLabel: "パスワード（任意）", passwordPlaceholder: "パスワードなしは空白", compactModeLabel: "コンパクトモード（短縮）", reverseLabel: "Base64反転", hiddenRedirectLabel: "隠しリダイレクト", generateBtn: "リンクを生成", stegEmbedTitle: "ファイルに埋め込む (ステガノグラフィ)", stegContentLabel: "埋め込む内容", stegRadioLink: "生成されたリンク", stegRadioCustom: "カスタムテキスト", stegCustomPlaceholder: "ここにカスタムテキストを入力...", stegEmbedFileLabel: "ファイルを選択", stegEmbedBtn: "埋め込んでダウンロード", stegDefaultBtn: "デフォルト画像を使用", goTitle: "クイックジャンプ", goDesc: "完全なリダイレクトリンクを貼り付けるか、ファイルをアップロードして直接ジャンプします。", goInputLabel: "完全なリンクを入力", goInputPlaceholder: "ここに貼り付け...", goFileLabel: "ファイルを選択", goBtn: "ジャンプ", stegExtractTitle: "ファイルから抽出", passModalTitle: "パスワードが必要です", passModalDesc: "このリンクはパスワードで保護されています。", passModalLabel: "パスワードを入力してください：", confirmBtn: "確認", cancelBtn: "キャンセル", copyBtn: "リンクをコピー", resultTitle: "生成結果:", errUrlShift: "URLとシフト数は必須です。", errEncoding: "エンコードに失敗", errDecoding: "デコードに失敗", errNoData: "ファイルにリダイレクトデータが見つかりません。", errNoInput: "リンクを入力するかファイルを選択してください。", errNoFile: "まずファイルを選択してください。", successGenerated: "リンクが正常に生成されました！", successCopied: "クリップボードにコピーしました！", successEmbedded: "データが埋め込まれ、ダウンロードが開始されます。", successExtracted: "データが正常に抽出されました！", successBg: "背景が更新されました！" }
+    };
+    const translateUI = () => { document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = translations[currentLang][el.dataset.i18n]); document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = translations[currentLang][el.dataset.i18nPlaceholder]); document.title = translations[currentLang].pageTitle; };
+    const setLanguage = (lang) => { currentLang = lang; localStorage.setItem('ry_lang', lang); document.documentElement.lang = lang.split('-')[0]; document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang)); translateUI(); };
+    
+    // --- Core Cryptography & Smart Compact Encoding Logic ---
+    const compress = async(d) => new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer().then(b => new Uint8Array(b));
+    const decompress = async(d) => new Response(new Blob([d]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer().then(b => new Uint8Array(b));
+    const bytesToBase85 = (b) => { let s="", n=0, l=b.length; for(let i=0;i<l;i+=4){ n=(b[i]<<24)|((b[i+1]||0)<<16)|((b[i+2]||0)<<8)|(b[i+3]||0); let t=""; for(let j=0;j<5;j++){ t=B85_CHARS[n%85]+t; n=Math.floor(n/85); } s+=t; } return s.slice(0, Math.ceil(l*5/4)); };
+    const base85ToBytes = (s) => { let n=0, l=s.length, b=[]; for(let i=0;i<l;i+=5){ n=0; for(let j=0;j<5;j++) n=n*85+B85_CHARS.indexOf(s[i+j]||B85_CHARS[84]); b.push(n>>24,(n>>16)&255,(n>>8)&255,n&255); } return new Uint8Array(b.slice(0, Math.floor(l*4/5))); };
+    
+    async function encode(url, shift, encodingKey, options) {
+        try {
+            const finalUrl = options.password ? `${options.password}${PASS_SEPARATOR}${url}` : url;
+            let bytes = new TextEncoder(ENCODING_MAP[encodingKey]).encode(finalUrl);
+            const originalLength = bytes.length;
+            bytes = new Uint8Array(bytes.map(byte => (byte + shift) & 255));
+            
+            let finalCode, finalPayloadLength, encodingMethod;
+            
+            if (options.compact) {
+                const compressedBytes = await compress(bytes);
+                const b85Compressed = bytesToBase85(new Uint8Array([1, ...compressedBytes]));
+                const b85Raw = bytesToBase85(new Uint8Array([0, ...bytes]));
+
+                finalCode = b85Compressed.length < b85Raw.length ? b85Compressed : b85Raw;
+                encodingMethod = b85Compressed.length < b85Raw.length ? 'Gzip+Base85' : 'Base85';
+                finalPayloadLength = encodingMethod === 'Gzip+Base85' ? compressedBytes.length + 1 : bytes.length + 1;
+            } else {
+                finalCode = btoa(String.fromCharCode.apply(null, bytes));
+                if (options.reverse) finalCode = finalCode.split('').reverse().join('');
+                encodingMethod = 'Base64';
+                finalPayloadLength = finalCode.length;
+            }
+            return { code: finalCode, originalLength, finalLength: finalPayloadLength, method: encodingMethod };
+        } catch (e) { showNotification(`${translations[currentLang].errEncoding}: ${e.message}`, 'error'); return null; }
+    }
+
+    async function decode(code, shift, encodingKey, options) {
+        try {
+            let bytes;
+            if (options.compact) {
+                const payload = base85ToBytes(code);
+                bytes = payload[0] === 1 ? await decompress(payload.slice(1)) : payload.slice(1);
+            } else {
+                const b64 = options.reverse ? code.split('').reverse().join('') : code;
+                const bin = atob(b64); bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+            }
+            const unshiftedBytes = new Uint8Array(bytes.map(byte => (byte - shift + 256) & 255));
+            return new TextDecoder(ENCODING_MAP[encodingKey]).decode(unshiftedBytes);
+        } catch (e) { showNotification(`${translations[currentLang].errDecoding}: ${e.message}`, 'error'); return null; }
+    }
+    
+    // --- Redirection & UI Logic ---
+    const showNotification = (msg, type='success') => { const el = document.getElementById('notification'); el.textContent = msg; el.style.backgroundColor = type === 'error' ? '#D32F2F' : '#28a745'; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); };
+    const doRedirect = (url) => { if (redirectParams.hiddenRedirect === 'y') { const o=document.getElementById('redirect-overlay'); o.innerHTML=`<iframe src="${url}" style="width:100%;height:100%;border:none;" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation"></iframe>`; o.classList.remove('hidden'); } else { window.location.href = url; } };
+    
+    async function processAndRedirect() {
+        if (!redirectParams) return;
+        const { RyDirectCode, CaesarPlace, CaesarCode, Reverse, Compact, P, HiddenRedirect } = redirectParams;
+        const decodedString = await decode(decodeURIComponent(RyDirectCode), +CaesarPlace, CaesarCode, { reverse: Reverse==='1', compact: Compact==='1' });
+        if (!decodedString) return;
+        if (P === '1') {
+            const modal = document.getElementById('password-modal-overlay'); modal.classList.add('open');
+            const input = document.getElementById('password-input'); input.value = ''; input.focus();
+            const handler = () => { const [expected, url] = decodedString.split(PASS_SEPARATOR); if (input.value === expected) { modal.classList.remove('open'); doRedirect(url); } else { showNotification('密码错误!', 'error'); }};
+            document.getElementById('password-submit-btn').onclick = handler;
+            document.getElementById('password-cancel-btn').onclick = () => modal.classList.remove('open');
+            input.onkeydown = (e) => e.key === 'Enter' && handler();
+        } else { doRedirect(decodedString); }
+    }
+    
+    const parseParams = (str) => { try { const p = new URL(str, location.origin).searchParams; if (!p.has('RyDirectCode')) return false; redirectParams = { RyDirectCode: p.get('RyDirectCode'), CaesarPlace: p.get('CaesarPlace'), CaesarCode: p.get('CaesarCode'), Reverse: p.get('Reverse'), HiddenRedirect: p.get('HiddenRedirect'), Compact: p.get('Compact'), P: p.get('P') }; return true; } catch (e) { return false; } };
+
+    (function setupEventListeners() {
+        // Settings panel
+        const sPanel = document.getElementById('settings-panel'), sOverlay = document.getElementById('settings-overlay');
+        document.getElementById('mode-toggle').addEventListener('click', () => { const m = body.dataset.themeMode === 'light' ? 'dark' : 'light'; body.dataset.themeMode = m; localStorage.setItem('ry_mode', m); });
+        document.getElementById('settings-btn').addEventListener('click', () => { sPanel.classList.add('open'); sOverlay.classList.add('open'); });
+        sOverlay.addEventListener('click', () => { sPanel.classList.remove('open'); sOverlay.classList.remove('open'); });
+        document.querySelectorAll('.theme-btn').forEach(b => b.addEventListener('click', () => { const t = b.dataset.theme; body.className = `theme-${t}`; localStorage.setItem('ry_theme', t); document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === t)); const sakura = document.getElementById('sakura-petals'); if (t==='sakura') { if (!sakura.innerHTML) createSakura(); } else { sakura.innerHTML = ''; } }));
+        document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => setLanguage(b.dataset.lang)));
+
+        // Background settings
+        const bgUrlInput = document.getElementById('bg-url-input');
+        const setBg = (url) => { body.style.backgroundImage = `var(--bg-image-overlay, none), url('${url}')`; localStorage.setItem('ry_bg', url); showNotification(translations[currentLang].successBg); };
+        document.getElementById('bg-apply-btn').addEventListener('click', () => setBg(bgUrlInput.value));
+        bgUrlInput.addEventListener('keydown', (e) => e.key === 'Enter' && setBg(bgUrlInput.value));
+        document.getElementById('bg-upload-input').addEventListener('change', (e) => { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (ev) => setBg(ev.target.result); reader.readAsDataURL(file); } });
+        document.getElementById('bg-reset-btn').addEventListener('click', () => { body.style.backgroundImage = ''; localStorage.removeItem('ry_bg'); });
+
+        // Tabs & Generator options
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { document.querySelector('.tab.active').classList.remove('active'); t.classList.add('active'); document.querySelector('.tab-content.active').classList.remove('active'); document.getElementById(t.dataset.tab).classList.add('active'); }));
+        const compactCheck = document.getElementById('compact-mode-check'), reverseCheck = document.getElementById('reverse-check'), reverseLabel = document.getElementById('reverse-label');
+        compactCheck.addEventListener('change', () => { reverseCheck.disabled = compactCheck.checked; reverseLabel.classList.toggle('disabled', compactCheck.checked); });
+        
+        // Generator Button
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const options = { url: document.getElementById('targetUrl').value, shift: +document.getElementById('caesarPlace').value, encodingKey: document.getElementById('caesarCode').value, password: document.getElementById('password').value, compact: compactCheck.checked, reverse: reverseCheck.checked, hiddenRedirect: document.getElementById('hidden-redirect-check').checked, };
+            if (!options.url || isNaN(options.shift)) return showNotification(translations[currentLang].errUrlShift, 'error');
+            const result = await encode(options.url, options.shift, options.encodingKey, options);
+            if (!result) return;
+            const params = new URLSearchParams({ RyDirectCode: result.code, CaesarPlace: options.shift, CaesarCode: options.encodingKey, Reverse: options.reverse ? '1' : '2', HiddenRedirect: options.hiddenRedirect ? 'y' : 'n' });
+            if (options.password) params.set('P', '1'); if (options.compact) params.set('Compact', '1');
+            const finalUrl = `${location.origin}${location.pathname}?${params.toString()}`;
+            showNotification(translations[currentLang].successGenerated, 'success');
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = `<h3 data-i18n="resultTitle">${translations[currentLang].resultTitle}</h3><div id="resultUrl">${finalUrl}</div><div id="compression-info"></div><button id="copyBtn" class="button" data-i18n="copyBtn" style="margin-top:1rem">${translations[currentLang].copyBtn}</button>`;
+            resultContainer.classList.remove('hidden');
+            document.getElementById('compression-info').textContent = `Raw: ${result.originalLength} bytes -> Final: ${result.finalLength} bytes (${((result.finalLength/result.originalLength)*100).toFixed(1)}%). Method: ${result.method}`;
+            document.getElementById('copyBtn').addEventListener('click', () => { navigator.clipboard.writeText(finalUrl); showNotification(translations[currentLang].successCopied); });
+            document.getElementById('steganography-section').classList.remove('hidden');
+        });
+
+        // Steganography
+        document.querySelectorAll('input[name="embed-source"]').forEach(radio => { radio.addEventListener('change', (e) => { document.getElementById('custom-embed-text').classList.toggle('hidden', e.target.value !== 'custom'); }); });
+        const embedContent = async (file) => {
+            let contentToEmbed = document.querySelector('input[name="embed-source"]:checked').value === 'link' ? document.getElementById('resultUrl').textContent : document.getElementById('custom-embed-text').value;
+            if (!contentToEmbed) contentToEmbed = document.getElementById('resultUrl').textContent; if (!contentToEmbed) return showNotification(translations[currentLang].errNoInput, 'error');
+            const fileBuffer = await file.arrayBuffer(); const contentBytes = new TextEncoder().encode(STEG_MARKER + contentToEmbed);
+            const newFileBytes = new Uint8Array(fileBuffer.byteLength + contentBytes.length); newFileBytes.set(new Uint8Array(fileBuffer), 0); newFileBytes.set(contentBytes, fileBuffer.byteLength);
+            const blob = new Blob([newFileBytes], { type: file.type }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `embedded_${file.name}`; a.click(); URL.revokeObjectURL(a.href); showNotification(translations[currentLang].successEmbedded);
+        };
+        document.getElementById('embedBtn').addEventListener('click', () => { const file = document.getElementById('file-to-embed').files[0]; if (file) embedContent(file); else showNotification(translations[currentLang].errNoFile, 'error'); });
+        document.getElementById('use-default-img-btn').addEventListener('click', async () => { const res = await fetch(DEFAULT_IMAGE_BASE64); const blob = await res.blob(); const file = new File([blob], 'default.png', { type: 'image/png' }); embedContent(file); });
+        
+        // Quick Go
+        document.getElementById('go-btn').addEventListener('click', async () => {
+            const goInput = document.getElementById('go-input').value, goFile = document.getElementById('go-file-input').files[0];
+            if (goInput) { if (parseParams(goInput)) processAndRedirect(); else showNotification(translations[currentLang].errDecoding, 'error'); } 
+            else if (goFile) { const content = await goFile.text(); const idx = content.lastIndexOf(STEG_MARKER); if (idx > -1) { if (parseParams(content.substring(idx + STEG_MARKER.length))) processAndRedirect(); } else { showNotification(translations[currentLang].errNoData, 'error'); } } 
+            else { showNotification(translations[currentLang].errNoInput, 'error'); }
+        });
+    })();
+
+    (function init() {
+        const savedLang = localStorage.getItem('ry_lang') || navigator.language; let initialLang = 'en';
+        if (savedLang.startsWith('zh')) initialLang = 'zh-CN'; if (savedLang.startsWith('ja')) initialLang = 'ja'; setLanguage(initialLang);
+        const savedTheme = localStorage.getItem('ry_theme') || 'metro'; const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedMode = localStorage.getItem('ry_mode') || (prefersDark ? 'dark' : 'light'); body.className = `theme-${savedTheme}`; body.dataset.themeMode = savedMode;
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === savedTheme)); if (savedTheme === 'sakura') createSakura();
+        const savedBg = localStorage.getItem('ry_bg'); if (savedBg) body.style.backgroundImage = `var(--bg-image-overlay, none), url('${savedBg}')`;
+        if (location.search && parseParams(location.href)) { document.querySelector('.container-wrapper').classList.add('hidden'); document.title = "Redirecting..."; processAndRedirect(); }
+        document.getElementById('compact-mode-check').dispatchEvent(new Event('change'));
+    })();
+    
+    function createSakura() {
+        const container = document.getElementById('sakura-petals'); if (container.innerHTML) return;
+        for (let i = 0; i < 20; i++) { const p = document.createElement('div'); p.className = 'petal'; const s = Math.random() * 10 + 5; p.style.width = `${s}px`; p.style.height = `${s * 0.7}px`; p.style.left = `${Math.random() * 100}vw`; const d = Math.random() * 5 + 5; const delay = Math.random() * 5; p.style.animationDuration = `${d}s`; p.style.animationDelay = `${delay}s`; container.appendChild(p); }
+    }
+});
+</script>
+</body>
+</html>
