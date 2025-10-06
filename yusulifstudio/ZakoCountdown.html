@@ -1,1 +1,602 @@
-<h1>部署中，请等待网页部署完成</h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- FAVICON REPLACEMENT: 替换为你自己的标签页图标 -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>ZakoCountdown - Your Worst Timekeeper</title>
+    <style>
+        :root {
+            /* 配色方案：天蓝—荧光粉—白 */
+            --sky-blue: #87CEEB;
+            --fluorescent-pink: #FF1493;
+            --white: #FFFFFF;
+            --dark-text: #2c2c2c;
+            --light-gray: #f9f9f9;a
+            /* 极客风格字体 */
+            --font-main: 'SF Mono', 'Consolas', 'Menlo', 'Courier New', monospace;
+        }
+
+        /* 全局样式与重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--white);
+            color: var(--dark-text);
+            line-height: 1.8;
+            overflow-x: hidden; /* 防止横向滚动 */
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- 头部导航栏 --- */
+        .navbar {
+            display: flex;
+            justify-content: flex-start; /* Logo靠左 */
+            align-items: center;
+            padding: 15px 40px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            /* 玻璃拟态背景 */
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .navbar .studio-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* STUDIO LOGO REPLACEMENT: 顶部工作室Logo */
+        .navbar .studio-logo img {
+            height: 70px; /* [修改点] 再次增大高度 */
+            width: auto;  /* 保持比例 */
+            display: block;
+        }
+
+        /* --- 开屏页/英雄区 (大面积留白) --- */
+        .hero {
+            height: 100vh; /* 占满全屏 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 0 20px;
+            background: radial-gradient(circle at center, var(--light-gray) 0%, var(--white) 70%);
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        /* LOGO REPLACEMENT: 开屏产品大Logo */
+        .hero .main-logo img {
+            width: 1080px; /* [修改点] 再次显著增大宽度 */
+            height: auto; /* 保持比例 */
+            max-width: 80vw; /* 确保在小屏幕不溢出 */
+            margin-bottom: 30px;
+            /* 悬浮动效 */
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 15px rgba(135, 206, 235, 0.3));
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: var(--fluorescent-pink); /* 使用荧光粉强调 */
+            margin-bottom: 25px;
+            font-weight: bold;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .hero .description {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            color: #555;
+        }
+
+        /* 行动号召按钮 */
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 0; /* 极客风使用直角或小圆角 */
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background-color: var(--sky-blue);
+            color: var(--white);
+            border: 2px solid var(--sky-blue);
+            box-shadow: 4px 4px 0px var(--dark-text); /* 复古/极客阴影 */
+        }
+
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--dark-text);
+            filter: brightness(1.05);
+        }
+        
+        .btn-primary:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px var(--dark-text);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--dark-text);
+            border: 2px solid var(--dark-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--dark-text);
+            color: var(--white);
+        }
+
+        /* 滚动提示 */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        
+        .scroll-indicator::after {
+            content: '↓ SCROLL_DOWN()';
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            font-family: var(--font-main);
+        }
+
+        /* --- 功能介绍模块 --- */
+        .features {
+            padding: 150px 0; /* 增加间距，体现留白 */
+            background-color: var(--white);
+        }
+
+        .feature-module {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* 文字 : 图片 */
+            gap: 80px;
+            align-items: center;
+            margin-bottom: 180px; /* 模块间的大留白 */
+            /* 滚动显现动画初始状态 */
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .feature-module:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 滚动显现激活状态 */
+        .feature-module.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 偶数模块图文对调 */
+        .feature-module:nth-child(even) .feature-text {
+            order: 2;
+        }
+        .feature-module:nth-child(even) .feature-image-container {
+            order: 1;
+        }
+
+        .feature-text h2 {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* 标题下的装饰线 */
+        .feature-text h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--sky-blue);
+        }
+
+        .feature-text .tagline {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: var(--fluorescent-pink); /* 荧光粉副标题 */
+            font-style: italic;
+        }
+
+        .feature-text > p {
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        /* 功能列表 */
+        .feature-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .feature-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .feature-list li strong {
+            color: var(--dark-text);
+        }
+
+        /* 列表项前的极客风符号 */
+        .feature-list li::before {
+            content: '>'; 
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--sky-blue);
+            font-weight: bold;
+            font-family: var(--font-main);
+        }
+        
+        /* 注释块 */
+        .note-box {
+            font-size: 0.85rem;
+            color: #777;
+            background-color: #f0f8ff; /* 极淡的天蓝背景 */
+            padding: 15px;
+            border-left: 4px solid var(--sky-blue);
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .note-in-text {
+            font-size: 0.85rem;
+            color: var(--fluorescent-pink);
+            margin-left: 5px;
+            font-weight: normal;
+        }
+
+        /* 功能图片占位区域 */
+        .feature-image-container {
+            position: relative;
+        }
+
+        /* 模拟图片/界面的容器 */
+        .feature-image-placeholder {
+            background-color: var(--white);
+            border-radius: 12px;
+            width: 100%;
+            aspect-ratio: 9/16; /* 模拟手机比例 */
+            max-height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            /* 极客风边框 */
+            border: 3px solid var(--dark-text);
+            box-shadow: 10px 10px 0px rgba(135, 206, 235, 0.5); /* 天蓝色硬阴影 */
+            font-family: var(--font-main);
+            color: #aaa;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 占位符内部文字样式 */
+        .feature-image-placeholder span {
+            z-index: 2;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+        }
+
+        /* 装饰性背景元素 (模拟二次元/扁平插画背景) */
+        .feature-image-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--light-gray),
+                var(--light-gray) 10px,
+                var(--white) 10px,
+                var(--white) 20px
+            );
+            opacity: 0.5;
+            z-index: 1;
+            top: -25%;
+            left: -25%;
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--light-gray);
+            color: var(--dark-text);
+            text-align: center;
+            padding: 80px 20px;
+            border-top: 1px solid #eee;
+            position: relative;
+        }
+        
+        /* 简单的装饰线条 */
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--sky-blue), var(--fluorescent-pink));
+        }
+
+        .footer .studio-logo-footer img {
+            height: 50px;
+            width: auto;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .footer h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer p {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* --- 动画定义 --- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -15px); }
+            60% { transform: translate(-50%, -7px); }
+        }
+
+        /* --- 响应式设计 (适配手机) --- */
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .navbar .studio-logo img { height: 55px; } /* 手机端稍微缩小 */
+
+            .hero h1 { font-size: 1.8rem; word-break: break-all; }
+            .hero .subtitle { font-size: 1.1rem; }
+            
+            .features { padding: 80px 0; }
+            .feature-module { 
+                grid-template-columns: 1fr; 
+                gap: 40px;
+                margin-bottom: 100px;
+            }
+            /* 手机端取消交错布局，文字始终在上方 */
+            .feature-module:nth-child(even) .feature-text { order: 0; }
+            .feature-module:nth-child(even) .feature-image-container { order: 1; }
+            
+            .feature-image-placeholder {
+                max-height: 450px; /* 手机端限制高度 */
+                box-shadow: 6px 6px 0px rgba(135, 206, 235, 0.5);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 头部导航栏 -->
+    <header class="navbar">
+        <div class="studio-logo">
+            <!-- STUDIO LOGO REPLACEMENT: 工作室Logo (建议长条形或图标) -->
+            <img src="studio_logo.png" alt="Errorsia Yusulif Studio">
+        </div>
+    </header>
+
+    <!-- 开屏页 / Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="main-logo">
+                <!-- LOGO REPLACEMENT: 产品大Logo (建议正方形或透明底图) -->
+                <img src="logo.png" alt="ZakoCountdown Logo">
+            </div>
+            <h1>time_manager --worst / sudo apt install calendar</h1>
+            <div class="subtitle">
+// Your Worst TimeKeeper<br>
+// Use a Calendar Instead
+            </div>
+            <p class="description">ZakoCountdown，一款拥有“灵魂”的倒数日应用。从独一无二的全屏弹窗提醒，到随心所欲的桌面微件，再到极致个性化的主题系统，我们用最强大的功能，守护你生命中每一个不容错过的瞬间。</p>
+            <div class="cta-buttons">
+                <a href="https://proxy.yusulif.xyz/yusulifstudio/NC2SProducts.html" class="btn btn-primary">[ 立即下载 ]</a>
+                <a href="https://github.com/Nanflas202202/ZakoCountdown" target="_blank" class="btn btn-secondary">git clone ./source</a>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="document.getElementById('features').scrollIntoView();"></div>
+    </section>
+
+    <!-- 功能介绍区域 -->
+    <main id="features" class="features container">
+        
+        <!-- 模块三：主动提醒 (核心卖点 - 优先展示) -->
+        <section class="feature-module">
+            <div class="feature-text">
+                <h2>业界领先的主动式提醒系统</h2>
+                <p class="tagline"># 不止被动查看，更能主动提醒</p>
+                <p>你不需要时刻记着打开APP，ZakoCountdown会在关键时刻主动找到你，用最醒目的方式提醒你。</p>
+                <ul class="feature-list">
+                    <li><strong>【独家】开屏弹窗提醒:</strong> 设置“重点日程”后，打开指定应用（如游戏、社交软件）时，全屏沉浸式倒计时界面优雅浮现，强制提醒，绝不错过！</li>
+                    <li><strong>常驻通知面板:</strong> 通知栏创建不可划掉的“信息面板”，实时显示多个重要日程，无需解锁一目了然。</li>
+                    <li><strong>智能定时提醒:</strong> 自定义在日程到达前（如1天、1周）发送标准通知。</li>
+                </ul>
+                <div class="note-box">
+                    <strong>NOTE:</strong> 智能兼容MIUI、HyperOS、ColorOS等系统。部分国产ROM需开启“允许后台弹窗”及无障碍模式。常驻通知在MIUI/HyperOS上可能需更改为“经典通知样式”。
+                </div>
+            </div>
+            <div class="feature-image-container">
+                <!-- 建议替换为：展示全屏弹窗出现效果的 GIF 或短视频 -->
+                <div class="feature-image-placeholder" style="background: #222; color: var(--fluorescent-pink);">
+                    <span>[视觉占位]<br>全屏弹窗警告效果<br>(GIF/Video Here)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模块二：极致个性化 (次核心卖点) -->
+        <section class="feature-module">
+            <div class="feature-text">
+                <h2>极致个性化，打造你的专属风格</h2>
+                <p class="tagline"># 千人千面，你的倒数日，你做主</p>
+                <p>拒绝千篇一律。从整体主题到单个卡片，ZakoCountdown的每一个像素都由你定义。</p>
+                <ul class="feature-list">
+                    <li><strong>三代主题系统:</strong> 内置 Material Design 1 (怀旧)、2 (经典)、3 (现代) 三套设计语言。<span class="note-in-text">//MD1暂不可用</span></li>
+                    <li><strong>Monet动态取色:</strong> (Android 12+) UI自动从壁纸提取颜色，完美融入系统。<span class="note-in-text">//Dev中</span></li>
+                    <li><strong>全局强调色 & 主页背景:</strong> 内置多种预设色，或从相册选择图片作为背景。</li>
+                    <li><strong>卡片级自定义:</strong> 独立设置单个日程卡片的背景色与透明度。</li>
+                </ul>
+            </div>
+            <div class="feature-image-container">
+                <!-- 建议替换为：展示不同主题和颜色切换的 GIF -->
+                <div class="feature-image-placeholder" style="background: url('placeholder_bg.jpg'); background-size: cover;">
+                    <span style="background: rgba(255,255,255,0.8);">[视觉占位]<br>多主题/自定义背景展示<br>(Dynamic UI GIF)</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 模块一：精准时间掌控 -->
+        <section class="feature-module">
+            <div class="feature-text">
+                <h2>精准到秒，掌控每一刻</h2>
+                <p class="tagline"># time_t precision = HIGH;</p>
+                <p>无论是期待未来的激动，还是回味过往的温馨，ZakoCountdown都能为你精确呈现。</p>
+                <ul class="feature-list">
+                    <li><strong>双向计时:</strong> 支持未来的倒数日 (Countdown) 和过去的纪念日 (Anniversary)。</li>
+                    <li><strong>三档精度切换:</strong>
+                        <br>- <strong>简洁模式:</strong> 仅显示核心“总天数”。
+                        <br>- <strong>详细模式:</strong> 天:时:分:秒，感受时间流逝。
+                        <br>- <strong>完整模式:</strong> 年:月:周:天，适用于超长期规划。
+                    </li>
+                </ul>
+            </div>
+            <div class="feature-image-container">
+                <!-- 建议替换为：展示详细模式秒数跳动的 GIF -->
+                <div class="feature-image-placeholder">
+                    <span style="font-size: 1.5rem; font-family: var(--font-main);">
+                        00<small>年</small> 12<small>天</small><br>
+                        <strong style="color:var(--fluorescent-pink)">08:45:33</strong>
+                        <br><br>[视觉占位] 精确计时动画
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 模块四：桌面微件 -->
+        <section class="feature-module">
+            <div class="feature-text">
+                <h2>桌面微件，信息一瞥即得</h2>
+                <p class="tagline"># Widget Connect();</p>
+                <p>将最重要的倒数日直接“钉”在你的桌面上，让期待感时刻伴随。</p>
+                <ul class="feature-list">
+                    <li><strong>高度可配置 & 一键添加:</strong> APP内长按日程即可快速添加对应微件。</li>
+                    <li><strong>低功耗动态更新:</strong> WorkManager后台驱动，准时刷新且省电。</li>
+                    <li><strong>个性化背景:</strong> 支持半透明等设置。<span class="note-in-text">//主题色Bug修复中，自定义图片待实现</span></li>
+                    <li><strong>快捷交互:</strong> 点击微件直达APP相关设置页。</li>
+                </ul>
+            </div>
+            <div class="feature-image-container">
+                <!-- 建议替换为：展示手机桌面上排列的不同微件截图 -->
+                <div class="feature-image-placeholder" style="aspect-ratio: 16/9; max-height: 400px;">
+                    <span>[视觉占位]<br>桌面微件集合展示图<br>(Static Image)</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- 页脚 -->
+    <footer id="download" class="footer">
+        <div class="studio-logo-footer">
+            <!-- STUDIO LOGO REPLACEMENT -->
+            <img src="studio_logo.png" alt="Errorsia Yusulif Studio">
+        </div>
+        <h3>Errorsia Yusulif Studio</h3>
+        <p>Designed & Developed with <span style="color:var(--fluorescent-pink)">♥</span> & Code.</p>
+        <p style="margin-top: 20px; font-size: 0.8rem;">&copy; 2025 ZakoCountdown. All Rights Reserved.</p>
+    </footer>
+
+    <!-- 简单的 JS 实现滚动动画 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const modules = document.querySelectorAll('.feature-module');
+            
+            const observerOptions = {
+                threshold: 0.15, // 元素出现15%时触发
+                rootMargin: "0px 0px -50px 0px" // 稍微提前一点触发
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // 动画只触发一次，取消观察
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            modules.forEach(module => {
+                observer.observe(module);
+            });
+        });
+    </script>
+</body>
+</html>
