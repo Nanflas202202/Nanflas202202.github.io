@@ -1,0 +1,191 @@
+/* 全局重置 */
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+a { text-decoration: none; color: inherit; display: block; }
+body, html { width: 100%; height: 100%; overflow: hidden; font-family: "Microsoft YaHei", sans-serif; background: #000; }
+
+/* --- 0. 开屏动画层 --- */
+#intro-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    transition: opacity 1s ease;
+}
+.intro-img {
+    /* 【修改】放大开屏 Logo */
+    max-width: 60%; 
+    max-height: 60%;
+    opacity: 0; transition: opacity 1.5s ease;
+}
+.intro-img.visible { opacity: 1; }
+#intro-layer.fade-out { opacity: 0; pointer-events: none; }
+
+/* --- 1. 自定义版权弹窗 (Modal) --- */
+.modal-overlay {
+    display: none; /* 默认隐藏 */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* 黑色半透明背景 */
+    backdrop-filter: blur(5px); /* 背景模糊 */
+    z-index: 9999;
+    justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.modal-overlay.show {
+    display: flex; opacity: 1;
+}
+
+.modal-content {
+    background: rgba(10, 30, 50, 0.85); /* 深色背景衬托文字 */
+    border: 1px solid rgba(0, 168, 255, 0.5); /* 蓝色边框 */
+    width: 400px; max-width: 90%;
+    padding: 30px; text-align: center; color: #fff;
+    box-shadow: 0 10px 40px rgba(0, 168, 255, 0.2);
+    transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.modal-overlay.show .modal-content { transform: scale(1); }
+
+.modal-content h3 { font-size: 1.5rem; margin-bottom: 20px; color: #00a8ff; }
+.modal-body p { margin-bottom: 10px; font-size: 1rem; opacity: 0.9; line-height: 1.5; }
+
+.modal-close-btn {
+    margin-top: 20px;
+    padding: 10px 30px;
+    background: #00a8ff; color: #fff; border: none;
+    font-size: 1rem; cursor: pointer; font-weight: bold;
+    transition: background 0.2s;
+}
+.modal-close-btn:hover { background: #0097e6; }
+
+
+/* --- 背景层 --- */
+.background-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('bg.png'); 
+    background-size: cover; background-position: center;
+    z-index: 0;
+}
+
+/* 竖屏强制提示 */
+#orientation-lock {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; color: #fff; z-index: 99;
+    flex-direction: column; justify-content: center; align-items: center;
+}
+@media screen and (orientation: portrait) { #orientation-lock { display: flex; } }
+
+/* 主容器 */
+.main-container { position: relative; width: 100%; height: 100%; display: flex; z-index: 10; }
+
+/* --- 通用面板 --- */
+.glass-panel {
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 0 !important; /* 直角 */
+}
+.hover-effect { transition: all 0.2s ease; }
+.hover-effect:active { transform: scale(0.98); filter: brightness(1.1); }
+
+/* --- UI 布局 --- */
+.ui-wrapper {
+    position: absolute; left: 5vw; top: 50%; transform: translateY(-50%);
+    width: 48vw; height: 78vh;
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.header-section { flex: 0 0 14%; display: flex; gap: 12px; }
+.logo-box { flex: 1.2; display: flex; align-items: center; }
+.logo-img { max-height: 100%; max-width: 100%; object-fit: contain; }
+
+/* 时钟：【修改】浅天蓝/冰蓝半透明 */
+.clock-style {
+    flex: 1;
+    background: rgba(135, 206, 235, 0.25); /* SkyBlue 透明 */
+    display: flex; flex-direction: column; justify-content: center;
+    padding-left: 20px; font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* 保证文字在浅色背景清晰 */
+}
+#day-display { font-size: 1rem; opacity: 0.9; }
+#time-display { font-size: 1.8rem; letter-spacing: 1px; }
+
+/* 项目轮播：【修改】主天蓝色 */
+.project-style {
+    background: rgba(0, 168, 255, 0.65); /* Vivid Sky Blue */
+    border-left: 5px solid #fff; /* 边框改为白色显得更干净 */
+}
+.project-carousel { flex: 1; position: relative; overflow: hidden; display: flex; }
+.carousel-inner { position: relative; width: 100%; height: 100%; }
+
+.project-item {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    padding: 40px;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; transform: translateY(15px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none; color: #fff;
+}
+.project-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.proj-title { 
+    font-size: 3rem; font-weight: 800; margin-bottom: 40px; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.proj-desc { font-size: 1.2rem; line-height: 1.6; opacity: 0.95; max-width: 90%; }
+
+.indicators {
+    position: absolute; bottom: 20px; right: 20px; display: flex; gap: 8px; z-index: 5;
+}
+.dot { width: 10px; height: 10px; background: rgba(255,255,255,0.4); transition: 0.3s; }
+.dot.active { background: #fff; transform: scale(1.2); }
+
+/* 底部区域 */
+.bottom-section { flex: 0 0 24%; display: flex; gap: 12px; }
+
+/* 博客：【修改】深天蓝 */
+.blog-style { background: rgba(0, 140, 200, 0.65); }
+.blog-box {
+    flex: 1.2; display: flex; flex-direction: column; justify-content: flex-end; padding: 25px;
+}
+.blog-box h2 { font-size: 2.2rem; }
+.blog-box .sub-text { font-size: 0.9rem; opacity: 0.8; letter-spacing: 2px; }
+
+.button-group { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+/* 按钮1：【修改】钢蓝/中性蓝 */
+.btn-style-1 { background: rgba(70, 130, 180, 0.65); }
+
+/* 按钮2：【修改】改为明亮的蔚蓝色，表示现在是活跃可点击状态 */
+.btn-style-2 { 
+    /* 以前是灰蓝色，现在改为 DodgerBlue (蔚蓝) 半透明 */
+    background: rgba(30, 144, 255, 0.5); 
+}
+.btn-item {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: bold;
+}
+.locked { opacity: 0.7; color: #ddd; cursor: default; }
+
+/* 左下角按钮 */
+.back-btn-fixed {
+    position: fixed; bottom: 30px; left: 0;
+    /* 改为橙黄色作为对比色，或者也可以改为深蓝 */
+    background: #e1b12c; color: #222;
+    padding: 12px 45px 12px 35px;
+    font-size: 1.1rem; font-weight: 800;
+    box-shadow: 4px 4px 15px rgba(0,0,0,0.3); z-index: 20;
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+}
+
+/* 右侧立绘 */
+.character-wrapper {
+    position: absolute; right: -5%; top: 5%; bottom: 0; width: 45vw;
+    display: flex; align-items: flex-end; justify-content: center;
+    pointer-events: auto; z-index: 5;
+    /* 增加鼠标样式提示可点击 */
+    cursor: pointer; 
+}
+#char-img {
+    max-height: 95vh; max-width: 100%; width: auto; object-fit: contain;
+    filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.4));
+    transition: opacity 0.2s ease;
+}
