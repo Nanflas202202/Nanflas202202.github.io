@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>404 ERROR — SYSTEM LOST</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+/* ====== Boot 屏幕背景 ====== */
+.splash{
+    position:fixed;
+    inset:0;
+    background:rgba(10,13,18,.92); /* 半透明，不遮挡背景图 */
+    color:#cfe7ff;
+    font-size:15px;
+    padding:40px;
+    z-index:10;
+    overflow:hidden;
+    font-family:"JetBrains Mono","Microsoft YaHei","PingFang SC";
+}
+
+/* 滚动容器 */
+.boot-scroll{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    max-height:100%;
+    overflow:hidden;
+}
+
+/* Boot 行 */
+.boot-line{
+    opacity:0;
+    margin:2px 0;
+    white-space:nowrap; /* 强制单行 */
+    font-family:"JetBrains Mono";
+}
+
+.boot-line span{
+    display:inline-block;
+    vertical-align:middle;
+}
+
+/* 分色 */
+.boot-line.ok .tag{ color:#4dff4d; font-weight:700; }
+.boot-line.failed .tag{ color:#ff3b3b; font-weight:700; }
+.boot-line.warn .tag{ color:#ffaa3b; font-weight:700; }
+
+/* 时间戳 */
+.boot-line .time{ color:#9fcaff; }
+
+/* 模块前缀 */
+.boot-line .mod{ color:#7bb7ff; }
+
+/* 滚动动画（填满后才启动） */
+.boot-scroll.animate{
+    animation:scrollUp linear forwards;
+}
+@keyframes scrollUp{
+    from{ transform:translateY(0); }
+    to{ transform:translateY(-50%); }
+}
+
+/* Boot 结束淡出 */
+.splash.finish{
+    animation:fadeOut 1s forwards;
+}
+@keyframes fadeOut{
+    to{ opacity:0; visibility:hidden; }
+}
+
+/* ====== 主界面 ====== */
+body{
+    margin:0;
+    background:url("desktop-404.png") center/cover no-repeat fixed;
+    color:#e8e8e8;
+    font-family:"JetBrains Mono","Microsoft YaHei","PingFang SC";
+}
+
+.wrap{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:min(900px,90%);
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+    text-align:center;
+}
+
+.panel{
+    border:2px solid #3aaaff;
+    background:rgba(30,120,200,.25);
+    padding:24px;
+}
+
+.big404{
+    font-size:92px;
+    font-weight:900;
+    color:#eaf4ff;
+}
+
+.error-panel{
+    border:2px solid #ff3b3b;
+    background:rgba(200,40,40,.25);
+    padding:22px;
+    white-space:pre-line;
+    text-align:left;
+}
+
+.buttons{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+}
+
+.btn{
+    padding:14px 34px;
+    border:2px solid #3aaaff;
+    background:rgba(40,110,180,.75);
+    cursor:pointer;
+    font-weight:700;
+    color:#eaf4ff;
+}
+.btn:hover{
+    background:rgba(60,140,210,.85);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ====== Boot 动画 ====== -->
+<div class="splash">
+    <div class="boot-scroll" id="bootArea"></div>
+</div>
+
+<!-- ====== 主界面 ====== -->
+<div class="wrap">
+
+    <div class="panel">
+        <div class="big404">404</div>
+        <div>目标页面不存在 · 已偏离航线</div>
+    </div>
+
+    <div class="error-panel">
+[ ERROR CODE : NF-404 ]
+Requested node unreachable.
+This targlet page does not exist on the Yusulif Studio server.
+It may have been removed, renamed, or is temporarily unavailable.
+    </div>
+
+    <div class="buttons">
+        <div class="btn" onclick="location.href='/'">返回主页</div>
+        <div class="btn" onclick="goBack()">返回上一页</div>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+    const boot = document.getElementById("bootArea");
+
+    /* -------------------------------
+       1. 真实环境读取
+    --------------------------------*/
+    const env = [
+        {mod:"system", msg:"Reading environment variables...", tag:"OK"},
+        {mod:"env", msg:`Browser: ${navigator.userAgent}`, tag:"OK"},
+        {mod:"env", msg:`Platform: ${navigator.platform}`, tag:"OK"},
+        {mod:"env", msg:`Language: ${navigator.language}`, tag:"OK"},
+        {mod:"env", msg:`Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`, tag:"OK"},
+        {mod:"env", msg:`Screen: ${screen.width}x${screen.height} @ ${devicePixelRatio}x`, tag:"OK"},
+        {mod:"env", msg:`Touch Support: ${'ontouchstart' in window}`, tag:"OK"},
+        {mod:"env", msg:`Local Time: ${new Date().toString()}`, tag:"OK"},
+    ];
+
+    /* -------------------------------
+       2. 固定 Boot 行
+    --------------------------------*/
+    const fixed = [
+        {mod:"systemd", msg:"Initializing Yusulif Bridge System...", tag:"OK"},
+        {mod:"kernel", msg:"Loading kernel modules...", tag:"OK"},
+        {mod:"systemd", msg:"Checking navigation matrix...", tag:"OK"},
+        {mod:"drm", msg:"Synchronizing star-map cache...", tag:"OK"},
+        {mod:"systemd", msg:"Verifying quantum beacons...", tag:"OK"},
+        {mod:"kernel", msg:"Establishing subspace channel...", tag:"OK"},
+        {mod:"systemd", msg:"Requesting target page...", tag:"OK"},
+        {mod:"kernel", msg:"Target page not found — Error 404", tag:"FAILED"},
+        {mod:"systemd", msg:"Logging incident...", tag:"OK"},
+        {mod:"systemd", msg:"Switching to emergency UI...", tag:"OK"},
+        {mod:"drm", msg:"Loading fallback interface...", tag:"OK"},
+        {mod:"systemd", msg:"Ready.", tag:"OK"},
+    ];
+
+    /* -------------------------------
+       3. 随机假错误
+    --------------------------------*/
+    const fakeErrors = [
+        {mod:"kernel", msg:"Non-critical anomaly detected...", tag:"WARN"},
+        {mod:"systemd", msg:"Service delay exceeded threshold...", tag:"WARN"},
+        {mod:"drm", msg:"Display sync jitter detected...", tag:"WARN"},
+        {mod:"kernel", msg:"Cache coherence check skipped...", tag:"WARN"},
+    ];
+
+    const insertCount = Math.floor(Math.random()*2)+1;
+    for(let i=0;i<insertCount;i++){
+        const idx = Math.floor(Math.random()*(fixed.length-3))+1;
+        fixed.splice(idx,0,fakeErrors[Math.floor(Math.random()*fakeErrors.length)]);
+    }
+
+    /* -------------------------------
+       4. 合并所有 Boot 行
+    --------------------------------*/
+    const all = [...env, ...fixed];
+
+    /* -------------------------------
+       5. 自动对齐算法
+    --------------------------------*/
+    const modWidth = Math.max(...all.map(l=>l.mod.length)) + 2;
+    const tagWidth = Math.max(...all.map(l=>l.tag.length)) + 2;
+
+    /* -------------------------------
+       6. 逐行显示 + 时间戳 + 随机延迟
+    --------------------------------*/
+    let start = performance.now();
+    let currentDelay = 0;
+
+    all.forEach((l,i)=>{
+        let rand = 80 + Math.random()*180;
+        currentDelay += rand;
+
+        setTimeout(()=>{
+            let now = performance.now();
+            let delta = (now - start) / 1000;
+            let stamp = delta.toFixed(6);
+
+            const line = document.createElement("div");
+            line.className = `boot-line ${l.tag.toLowerCase()}`;
+            line.innerHTML = `
+                <span class="time">[ ${stamp} ]</span>
+                <span class="mod">${(`[${l.mod}]`).padEnd(modWidth)}</span>
+                <span class="tag">${l.tag.padEnd(tagWidth)}</span>
+                <span class="msg">${l.msg}</span>
+            `;
+
+            boot.appendChild(line);
+            line.style.opacity = 1;
+
+            // 自动滚动到底部
+            boot.scrollTop = boot.scrollHeight;
+
+            // 填满屏幕后启动滚动动画
+            if(boot.scrollHeight > window.innerHeight){
+                boot.classList.add("animate");
+            }
+
+        }, currentDelay);
+    });
+
+    /* -------------------------------
+       7. Boot 结束
+    --------------------------------*/
+    setTimeout(()=>{
+        document.querySelector(".splash").classList.add("finish");
+    }, currentDelay + 1000);
+});
+function goBack(){
+    // 有来源页并且不是当前页
+    if (document.referrer && document.referrer !== location.href) {
+        history.back();
+    } else {
+        // 没有上一页 → 回主页
+        window.location = "/";
+    }
+}
+
+</script>
+
+</body>
+</html>
