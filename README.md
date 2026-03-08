@@ -24,10 +24,11 @@
  -->
  # <font color="blue">NC2 Studio</font>
  ## 关于我们
- 我们是NC2S，一家致力于服务中学生的软件工作室，主要由TsukiKenga开发。
+ 我们是NC2S/Yusulif Studio，一家致力于服务中学生的软件工作室，主要由TsukiKenga开发。
  ## 我们的合作伙伴
  我们是**Errorsia Yusulif Studio**的一员，与[Errorsia Studio](https://github.com/Errorsia/)深度合作
  ## 我们的产品
  请移步[项目中心](https://proxy.yusulif.xyz/#projects)查看
  ## 加入我们
  请联系Errorsia进行咨询
+
