@@ -7,5 +7,5 @@
 > > 测试2
 > >
 
-![这是测试图片](..\img\testphoto_75393724_p0.png)
+![这是测试图片](.\assets\img\testphoto_75393724_p0.png)
 
