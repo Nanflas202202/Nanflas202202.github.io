@@ -7,14 +7,87 @@
         title: "测试文章",
         date: "2026-03-08",
         summary: "这是测试这个博客框架运行是否正常的文章",
-        cover: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+        cover: "./assets/img/cover1_112461739_p0.jpg", 
         url: "./post.html?id=test" // 指向 posts/hello.md
     }
 ];
 
+// 2. 随机背景图列表 (支持相对路径或网络图片)
+const backgroundImages = [
+    "./assets/img/bg.jpg", 
+    "./assets/img/bg1.jpg",
+    "./assets/img/bg2.jpg",
+    "./assets/img/bg.png",
+    "./assets/img/bg1.png"
+];
+
+// 3. 随机打字机文案列表
+const taglines = [
+    "记录生活中清澈的灵感与代码。",
+    "Code less, create more.",
+    "探索未知，保持好奇。",
+    "在数字世界里构建诗意。"
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. 生成魔法光尘
+    // ===================================
+    // 1. 随机背景图逻辑
+    // ===================================
+    const bgLayer = document.querySelector('.background-layer');
+    if (bgLayer && backgroundImages.length > 0) {
+        // 随机取一张
+        const randomBg = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+        bgLayer.style.backgroundImage = `url('${randomBg}')`;
+    }
+
+    // ===================================
+    // 2. 原生 JS 打字机逻辑 (解决截断问题 & 支持多句)
+    // ===================================
+    const typewriterText = document.getElementById('typewriter-text');
+    if (typewriterText && taglines.length > 0) {
+        let textIndex = 0; // 当前第几句话
+        let charIndex = 0; // 当前第几个字
+        let isDeleting = false; // 是否处于回删状态
+        let typeSpeed = 100; // 打字速度
+        
+        function typeLoop() {
+            const currentText = taglines[textIndex];
+            
+            if (isDeleting) {
+                // 回删逻辑
+                typewriterText.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // 回删速度快一点
+            } else {
+                // 打字逻辑
+                typewriterText.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 150; // 正常打字速度
+            }
+
+            // 逻辑判断
+            if (!isDeleting && charIndex === currentText.length) {
+                // 打完了这句话，停顿 2 秒
+                isDeleting = true;
+                typeSpeed = 2000; 
+            } else if (isDeleting && charIndex === 0) {
+                // 删完了，切换下一句
+                isDeleting = false;
+                textIndex = (textIndex + 1) % taglines.length; // 循环播放
+                typeSpeed = 500;
+            }
+
+            setTimeout(typeLoop, typeSpeed);
+        }
+
+        // 启动打字循环
+        typeLoop();
+    }
+
+    // ===================================
+    // 3. 魔法光尘特效
+    // ===================================
     const dustContainer = document.createElement('div');
     dustContainer.className = 'dust-container';
     document.body.appendChild(dustContainer);
@@ -32,7 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dustContainer.appendChild(dust);
     }
 
-    // 2. 鼠标跟随
+    // ===================================
+    // 4. 鼠标跟随
+    // ===================================
     const cursorGlow = document.createElement('div');
     cursorGlow.id = 'cursor-glow';
     document.body.appendChild(cursorGlow);
@@ -43,7 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. 首页渲染
+    // ===================================
+    // 5. 首页列表渲染 & Scroll Reveal
+    // ===================================
     const postContainer = document.getElementById('post-container');
     if (postContainer) {
         postContainer.innerHTML = ''; 
@@ -57,17 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. 打字机宽度自适应
-    const typewriter = document.querySelector('.typewriter');
-    if(typewriter) {
-        const textLen = typewriter.innerText.length;
-        typewriter.style.animation = `typing 2.5s steps(${textLen}, end) forwards, blink-caret .75s step-end infinite`;
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes typing { from { width: 0 } to { width: ${textLen}em } }`;
-        document.head.appendChild(style);
-    }
-
-    // 5. Scroll Reveal 动画
     const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -78,7 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+    // ===================================
     // 6. 首页极慢缓动滚动接管
+    // ===================================
     const homeSection = document.getElementById('home');
     const contentSection = document.getElementById('content');
     if (homeSection && contentSection) {
@@ -122,20 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if(indicator) indicator.addEventListener('click', (e) => { e.preventDefault(); if(!isAnimating) customScrollTo(contentSection.offsetTop); });
     }
 
-    // ==========================================
-    // 7. 文章页：动态拉取并渲染 Markdown
-    // ==========================================
+    // ===================================
+    // 7. 文章页：动态拉取 Markdown
+    // ===================================
     const mdContainer = document.getElementById('markdown-content');
     const titleEle = document.getElementById('article-title');
     const dateEle = document.getElementById('article-date');
 
     if (mdContainer) {
-        // 从 URL 获取 id 参数，例如 ?id=hello
         const params = new URLSearchParams(window.location.search);
         const postId = params.get('id');
 
         if (postId) {
-            // 在配置数据中查找这篇文章的信息（用于替换标题和日期）
             const postInfo = postsData.find(p => p.url.includes(postId));
             if(postInfo) {
                 titleEle.innerText = postInfo.title;
@@ -143,14 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.title = postInfo.title + " - 博客阅读";
             }
 
-            // 使用 fetch 拉取 markdown 文件
             fetch(`./posts/${postId}.md`)
                 .then(response => {
                     if (!response.ok) throw new Error('文章飞向了外太空...');
                     return response.text();
                 })
                 .then(text => {
-                    // 调用 marked.js 将 MD 转为 HTML 注入
                     mdContainer.innerHTML = marked.parse(text);
                 })
                 .catch(err => {

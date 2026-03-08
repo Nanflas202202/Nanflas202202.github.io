@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yusulif的博客</title>
+    <title>我的博客</title>
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
+    <!-- 动态背景层 (图片地址由 JS 随机注入) -->
     <div class="background-layer"></div>
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
@@ -15,8 +16,14 @@
         <div style="position: absolute; top: 40px; width: 100%; text-align: center;">
             <a href="/" class="nav-btn">⌂ 网站首页</a>
         </div>
-        <h1>时雨初风的小站</h1>
-        <div class="typewriter">记录生活中清澈的灵感与代码。</div>
+        <h1>时雨初风的博客</h1>
+        
+        <!-- 🌟 新的打字机结构 -->
+        <div class="typewriter-container">
+            <span id="typewriter-text"></span>
+            <span class="typewriter-cursor"></span>
+        </div>
+        
         <a href="#content" class="scroll-indicator">
             <div class="mouse"></div>
             <span>向下滑动探索</span>
