@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客阅读</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    
+    <!-- 为了解析 Markdown，这是全站唯一引用的一个极小且稳定的外部库 (压缩后不足 30kb) -->
+    <!-- 由于它是静态渲染必需，从顶级 CDN 引入，保证极高稳定性 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="background-layer"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <section class="article-hero" id="top">
+        <div style="position: absolute; top: 40px; left: 40px;">
+            <a href="./index.html" class="nav-btn">← 返回文章列表</a>
+        </div>
+        
+        <div class="article-header" style="max-width: 800px; padding: 0 20px;">
+            <!-- 标题和日期现在会由 JS 自动从配置中读取并填入 -->
+            <h1 id="article-title">正在加载回忆...</h1>
+            <div style="color: var(--text-main); font-weight: 600; margin-top: 15px; font-size: 1.1rem;">
+                发布于 <span id="article-date" style="color: var(--accent-4); font-weight: bold;">...</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="article-body">
+        <div class="container">
+            <!-- 这个容器现在是空的，Markdown 解析后的 HTML 会自动注入到这里，并自带缓动渐入动画 -->
+            <article class="glass-panel article-content" id="markdown-content">
+                <div style="text-align: center; color: #999;">
+                    正在翻阅日记本... (加载中)
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <script src="./assets/js/main.js"></script>
+</body>
+</html>
