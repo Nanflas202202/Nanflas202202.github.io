@@ -34,7 +34,6 @@ body {
    ========================================= */
 .background-layer { 
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -4; 
-    /* 背景图 URL 将由 JS 随机注入 */
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -65,25 +64,21 @@ body {
    ========================================= */
 .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
 
-/* 🌟 修改点：静态的浅粉色到深红色渐变 */
 .hero h1 { 
     font-family: var(--font-serif); 
     font-size: 5.5rem; 
     margin: 0; 
     letter-spacing: 2px; 
     font-weight: 800; 
-    /* 135度线性渐变：浅粉(#ff9a9e) -> 深红(#b91c1c) */
+    /* 静态渐变：浅粉 -> 深红 */
     background: linear-gradient(135deg, #ff9a9e 0%, #b91c1c 100%);
     -webkit-background-clip: text; 
     -webkit-text-fill-color: transparent; 
-    /* 配合红色调的阴影，增加层次感 */
     text-shadow: 0px 10px 30px rgba(185, 28, 28, 0.2); 
-    /* 仅保留入场时的淡入下落动画，去除循环shine */
     animation: fadeInDown 1s ease-out; 
 }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 打字机容器 */
 .typewriter-container {
     font-size: 1.25rem; color: #555; margin-top: 25px; 
     font-weight: 500; letter-spacing: 2px;
@@ -93,7 +88,6 @@ body {
     justify-content: center;
     min-height: 1.5em;
 }
-/* 光标 */
 .typewriter-cursor {
     display: inline-block;
     width: 2px;
@@ -102,10 +96,7 @@ body {
     margin-left: 5px;
     animation: blink-caret 0.75s step-end infinite;
 }
-@keyframes blink-caret { 
-    from, to { opacity: 1; } 
-    50% { opacity: 0; } 
-}
+@keyframes blink-caret { from, to { opacity: 1; } 50% { opacity: 0; } }
 
 .scroll-indicator { position: absolute; bottom: 5vh; text-decoration: none; display: flex; flex-direction: column; align-items: center; color: var(--text-main); transition: opacity 0.3s, transform 0.3s; cursor: pointer;}
 .scroll-indicator:hover { opacity: 0.7; transform: translateY(5px); }
@@ -143,8 +134,18 @@ body {
 
 .article-content { 
     font-size: 1.15rem; color: #34495e; margin-top: -30px; position: relative; z-index: 5;
-    opacity: 0; animation: slowFadeIn 1.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; animation-delay: 0.2s; 
+    /* 关键修复：确保有 opacity:0 起始状态 */
+    opacity: 0; 
+    /* 关键修复：补回了 slowFadeIn 动画 */
+    animation: slowFadeIn 1.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; 
+    animation-delay: 0.2s; 
 }
+/* 🌟 关键修复：补回了缺失的动画定义，让正文可以从下方渐入显示 */
+@keyframes slowFadeIn { 
+    from { opacity: 0; transform: translateY(40px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
 .article-content h1, .article-content h2, .article-content h3, .article-content h4 { font-family: var(--font-serif); color: #2c3e50; margin-top: 60px; margin-bottom: 20px; font-weight: 700; line-height: 1.4; }
 .article-content h2 { font-size: 2.2rem; position: relative; padding-left: 20px; }
 .article-content h2::before { content: ''; position: absolute; left: 0; top: 10%; height: 80%; width: 5px; background: linear-gradient(to bottom, var(--accent-1), var(--accent-3)); border-radius: 5px; }
