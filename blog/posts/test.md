@@ -7,13 +7,13 @@
 > > 测试2
 > >
 
-![这是测试图片](./assets/img/testphoto_75393724_p0.png)
+![这是测试图片](blog/assets/img/testphoto_75393724_p0.png)
 
 | 测试表格  | 测试表格内容 |
 | --------- | ------------ |
 | Header    | Title        |
 | Paragraph | Text         |
-| [TestLink](https://snake.errorsia.com) | ![TestLinkPhoto](./assets/img/testphoto_137120763_p0.jpg) |
+| [TestLink](https://snake.errorsia.com) | ![TestLinkPhoto](blog/assets/img/testphoto_137120763_p0.jpg) |
 
 ```
 {
