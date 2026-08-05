@@ -1,0 +1,6 @@
+{
+  "versionCode": 90,
+  "versionName": "v0.9.0",
+  "changelog": "1. 全新 OOBE 开箱引导\n2. 新增动态自定义滑动交互\n3. 修复了若干已知 Bug",
+  "downloadUrl": "https://github.com/nanflas202202/zakocountdown/releases/latest"
+}
