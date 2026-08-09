@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>便签本</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, sans-serif;
+            background: #F0F0F0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            /* WinUI2 微妙的背景纹理感 */
+            background-image: radial-gradient(ellipse at 20% 50%, rgba(200, 200, 200, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(200, 200, 200, 0.10) 0%, transparent 60%);
+        }
+
+        /* ===== 应用容器 ===== */
+        .app-container {
+            width: 100%;
+            max-width: 720px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .app-container:hover {
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ===== 标题栏 (WinUI2 CommandBar 风格) ===== */
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: #FFFFFF;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            user-select: none;
+        }
+
+        .title-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-icon {
+            font-size: 22px;
+            line-height: 1;
+            opacity: 0.85;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A1A1A;
+            letter-spacing: 0.2px;
+        }
+
+        .title-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .time-display {
+            font-size: 14px;
+            font-weight: 400;
+            color: #666666;
+            letter-spacing: 0.3px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+
+        .time-display:hover {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .title-btn {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            line-height: 1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #666;
+            cursor: default;
+            transition: background 0.2s, color 0.2s;
+            opacity: 0.7;
+        }
+
+        .title-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: #1A1A1A;
+            opacity: 1;
+        }
+
+        /* ===== 主内容区 ===== */
+        .main-content {
+            padding: 28px 24px 20px;
+        }
+
+        /* ===== 便签卡片 ===== */
+        .note-card {
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 24px 26px 26px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .note-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0078D4, #5EB0EF);
+            border-radius: 10px 10px 0 0;
+            opacity: 0.7;
+        }
+
+        .note-card:hover {
+            border-color: rgba(0, 120, 212, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 120, 212, 0.06);
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .note-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1A1A1A;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-title .pin-icon {
+            font-size: 16px;
+            opacity: 0.6;
+        }
+
+        .note-meta {
+            font-size: 12px;
+            color: #999;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 2px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.2px;
+        }
+
+        .note-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            margin: 10px 0 16px 0;
+        }
+
+        .note-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #1A1A1A;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 80px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+            transition: opacity 0.4s ease;
+        }
+
+        .note-body::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .note-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        .note-body::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        .note-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* 空状态占位 */
+        .note-body .placeholder {
+            color: #B0B0B0;
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        /* ===== 底部栏 ===== */
+        .note-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding: 0 4px;
+        }
+
+        .word-count {
+            font-size: 13px;
+            color: #999;
+            letter-spacing: 0.2px;
+            font-weight: 400;
+        }
+
+        .note-footer-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .footer-btn {
+            background: transparent;
+            border: none;
+            font-size: 13px;
+            color: #888;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: default;
+            transition: background 0.2s, color 0.2s;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+        }
+
+        .footer-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1A1A1A;
+        }
+
+        /* ===== 底部状态 (WinUI2 风格) ===== */
+        .app-status {
+            padding: 10px 24px 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #AAAAAA;
+            letter-spacing: 0.2px;
+        }
+
+        .app-status .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #6BBF6B;
+            margin-right: 6px;
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+        }
+
+        .app-status .status-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .app-status .status-version {
+            color: #CCCCCC;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .app-container {
+                border-radius: 10px;
+            }
+
+            .title-bar {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .app-title {
+                font-size: 16px;
+            }
+
+            .app-icon {
+                font-size: 19px;
+            }
+
+            .time-display {
+                font-size: 12px;
+                padding: 2px 10px;
+            }
+
+            .main-content {
+                padding: 16px 14px 12px;
+            }
+
+            .note-card {
+                padding: 18px 16px 20px;
+            }
+
+            .note-title {
+                font-size: 15px;
+            }
+
+            .note-body {
+                font-size: 15px;
+                line-height: 1.7;
+                min-height: 60px;
+                max-height: 300px;
+            }
+
+            .note-meta {
+                font-size: 11px;
+                padding: 1px 10px;
+            }
+
+            .app-status {
+                padding: 8px 16px 12px;
+                font-size: 11px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .note-footer {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .title-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+
+            .title-bar-right {
+                justify-content: flex-end;
+            }
+
+            .note-card {
+                padding: 14px 12px 16px;
+            }
+
+            .note-body {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        }
+
+        /* ===== 滚动条整体美化 (WinUI2 风格) ===== */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* ===== 加载入场动画 ===== */
+        .app-container {
+            animation: fade-slide-up 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+        }
+
+        @keyframes fade-slide-up {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .note-body .fade-in {
+            animation: content-fade 0.5s ease both;
+        }
+
+        @keyframes content-fade {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 选中高亮 (WinUI2 风格) ===== */
+        ::selection {
+            background: rgba(0, 120, 212, 0.2);
+            color: #1A1A1A;
+        }
+
+        /* ===== 工具类 ===== */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container" role="main">
+        <!-- ===== 标题栏 ===== -->
+        <header class="title-bar">
+            <div class="title-bar-left">
+                <span class="app-icon" aria-hidden="true">📝</span>
+                <span class="app-title">便签本</span>
+            </div>
+            <div class="title-bar-right">
+                <span class="time-display" id="timeDisplay" aria-label="当前时间">--:--</span>
+                <button class="title-btn" aria-label="更多操作" tabindex="-1">⋯</button>
+            </div>
+        </header>
+
+        <!-- ===== 主内容 ===== -->
+        <main class="main-content">
+            <div class="note-card">
+                <div class="note-header">
+                    <span class="note-title">
+                        <span class="pin-icon" aria-hidden="true">📌</span>
+                        今日便签
+                    </span>
+                    <span class="note-meta" id="noteDate">今天</span>
+                </div>
+                <div class="note-divider"></div>
+                <div class="note-body" id="noteContent">
+                    <span class="placeholder">✨ 今天天气晴朗，微风拂面，是个出行的好日子。<br />下午去公园散步，看到湖面上波光粼粼，心情格外舒畅。</span>
+                </div>
+                <div class="note-footer">
+                    <span class="word-count" id="wordCount">共 0 个字</span>
+                    <div class="note-footer-actions">
+                        <button class="footer-btn" id="copyBtn" tabindex="-1">📋 复制</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== 底部状态栏 ===== -->
+        <footer class="app-status">
+            <span class="status-text">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span>已就绪</span>
+            </span>
+            <span class="status-version">v2.1 · 本地便签</span>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  1. DOM 引用
+            // ============================================================
+            const noteContent = document.getElementById('noteContent');
+            const wordCount = document.getElementById('wordCount');
+            const noteDate = document.getElementById('noteDate');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const copyBtn = document.getElementById('copyBtn');
+
+            // ============================================================
+            //  2. 工具函数
+            // ============================================================
+
+            /** 更新字数统计 */
+            function updateWordCount(text) {
+                const clean = text.replace(/\s/g, '');
+                const count = clean.length;
+                wordCount.textContent = `共 ${count} 个字`;
+                return count;
+            }
+
+            /** 获取今日日期字符串 */
+            function getTodayString() {
+                const d = new Date();
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                const month = d.getMonth() + 1;
+                const day = d.getDate();
+                const wd = weekdays[d.getDay()];
+                return `${month}月${day}日 周${wd}`;
+            }
+
+            /** 格式化时间 HH:MM */
+            function formatTime(d) {
+                const h = String(d.getHours()).padStart(2, '0');
+                const m = String(d.getMinutes()).padStart(2, '0');
+                return `${h}:${m}`;
+            }
+
+            /** 更新时钟 */
+            function updateClock() {
+                const now = new Date();
+                timeDisplay.textContent = formatTime(now);
+            }
+
+            // ============================================================
+            //  3. Base64 解码（支持 UTF-8）
+            // ============================================================
+
+            function safeBase64Decode(encoded) {
+                try {
+                    // 1) URL 解码 (处理 %2B, %2F 等)
+                    const urlDecoded = decodeURIComponent(encoded);
+                    // 2) Base64 解码
+                    const binary = atob(urlDecoded);
+                    // 3) 将 binary string 转为 Uint8Array
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) {
+                        bytes[i] = binary.charCodeAt(i);
+                    }
+                    // 4) 用 UTF-8 解码
+                    const text = new TextDecoder('utf-8').decode(bytes);
+                    return text;
+                } catch (_) {
+                    return null;
+                }
+            }
+
+            // ============================================================
+            //  4. 从 URL 中提取 ?=xxx 参数
+            // ============================================================
+
+            function extractBase64FromURL() {
+                const search = window.location.search;
+                if (!search || search.length < 2) return null;
+
+                // 匹配 ?=xxx 格式，xxx 为任意非 & 字符
+                const match = search.match(/^\?=([^&]*)/);
+                if (match && match[1]) {
+                    return match[1];
+                }
+                return null;
+            }
+
+            // ============================================================
+            //  5. 核心逻辑：检测并解码
+            // ============================================================
+
+            function processURLContent() {
+                const raw = extractBase64FromURL();
+                if (!raw) {
+                    // 无参数：保留默认占位内容
+                    const placeholder = noteContent.querySelector('.placeholder');
+                    if (placeholder) {
+                        const text = placeholder.textContent.replace(/\s+/g, ' ').trim();
+                        updateWordCount(text);
+                    }
+                    return;
+                }
+
+                // 尝试解码
+                const decoded = safeBase64Decode(raw);
+                if (decoded === null || decoded === '') {
+                    // 解码失败：保持默认内容，静默处理
+                    const placeholder = noteContent.querySelector('.placeholder');
+                    if (placeholder) {
+                        const text = placeholder.textContent.replace(/\s+/g, ' ').trim();
+                        updateWordCount(text);
+                    }
+                    return;
+                }
+
+                // 解码成功：替换内容
+                // 移除 placeholder 类（如果存在）
+                noteContent.classList.remove('placeholder');
+                // 清空并填入新内容
+                noteContent.textContent = decoded;
+                // 添加淡入动画
+                noteContent.classList.add('fade-in');
+                // 更新字数
+                updateWordCount(decoded);
+                // 更新日期为 "今天 · 解码"
+                noteDate.textContent = getTodayString() + ' · 📥';
+            }
+
+            // ============================================================
+            //  6. 复制功能 (伪装成便签的复制)
+            // ============================================================
+
+            copyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const text = noteContent.textContent.trim();
+                if (!text) return;
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        const orig = copyBtn.textContent;
+                        copyBtn.textContent = '✅ 已复制';
+                        copyBtn.style.color = '#0078D4';
+                        setTimeout(() => {
+                            copyBtn.textContent = orig;
+                            copyBtn.style.color = '';
+                        }, 1800);
+                    }).catch(() => {
+                        fallbackCopy(text);
+                    });
+                } else {
+                    fallbackCopy(text);
+                }
+            });
+
+            function fallbackCopy(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '0';
+                document.body.appendChild(textarea);
+                try {
+                    textarea.select();
+                    document.execCommand('copy');
+                    const orig = copyBtn.textContent;
+                    copyBtn.textContent = '✅ 已复制';
+                    copyBtn.style.color = '#0078D4';
+                    setTimeout(() => {
+                        copyBtn.textContent = orig;
+                        copyBtn.style.color = '';
+                    }, 1800);
+                } catch (_) { /* ignore */ }
+                document.body.removeChild(textarea);
+            }
+
+            // ============================================================
+            //  7. 初始化
+            // ============================================================
+
+            function init() {
+                // 日期
+                noteDate.textContent = getTodayString();
+
+                // 时钟
+                updateClock();
+                setInterval(updateClock, 10000);
+
+                // 处理 URL 参数
+                processURLContent();
+
+                // 如果没有内容，保证字数统计正确
+                const existingText = noteContent.textContent.trim();
+                if (existingText) {
+                    updateWordCount(existingText);
+                }
+            }
+
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
